@@ -1,0 +1,234 @@
+/* ── Reset & base ── */
+.page {
+  min-height: 100vh;
+  background: #0d0f14;
+  color: #e8eaf0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* ── Nav ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid #2a2f42;
+  position: sticky;
+  top: 0;
+  background: rgba(13,15,20,0.9);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.navBrand { font-weight: 600; letter-spacing: 0.05em; color: #4f7cff; }
+.navLinks  { display: flex; gap: 24px; align-items: center; }
+.navLinks a { color: #9ca3af; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+.navLinks a:hover { color: #e8eaf0; }
+.navAdmin {
+  background: #1c2030;
+  border: 1px solid #2a2f42;
+  padding: 6px 16px;
+  border-radius: 8px;
+  color: #e8eaf0 !important;
+}
+
+/* ── Layout ── */
+.wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 56px 20px 80px;
+}
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 48px; }
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #4f7cff;
+  border: 1px solid #4f7cff;
+  padding: 4px 14px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+.header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8eaf0 30%, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header h1 em { font-style: italic; }
+.header p { color: #6b7280; font-size: 15px; line-height: 1.7; }
+
+/* ── Card ── */
+.card {
+  background: #1c2030;
+  border: 1px solid #2a2f42;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+/* ── Form ── */
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 500px) { .row2 { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.field input,
+.field textarea {
+  background: #151820;
+  border: 1px solid #2a2f42;
+  border-radius: 10px;
+  color: #e8eaf0;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+.field input:focus,
+.field textarea:focus { border-color: #4f7cff; }
+.field input::placeholder,
+.field textarea::placeholder { color: #4b5563; }
+
+/* ── Chips ── */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.chip {
+  background: #151820;
+  border: 1px solid #2a2f42;
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.chip:hover { border-color: #4f7cff; color: #4f7cff; }
+
+/* ── Submit button ── */
+.btnSubmit {
+  width: 100%;
+  padding: 14px;
+  background: #4f7cff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+}
+.btnSubmit:hover:not(:disabled) { opacity: 0.88; }
+.btnSubmit:active:not(:disabled) { transform: scale(0.99); }
+.btnSubmit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error ── */
+.error {
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #f87171;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* ── Resultado ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.resultHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.dot {
+  width: 10px; height: 10px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #34d399;
+}
+.resultHeader span { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #34d399; }
+
+.codigoBox {
+  background: #151820;
+  border: 1px solid #2a2f42;
+  border-left: 3px solid #4f7cff;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.codigoLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; }
+.codigo { font-size: 22px; font-weight: 700; color: #4f7cff; letter-spacing: 0.05em; }
+.codigoHint { font-size: 12px; color: #6b7280; }
+
+.resumen {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #d1d5db;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: #151820;
+  border-radius: 8px;
+}
+
+/* ── Badges ── */
+.badges { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.badge {
+  background: #151820;
+  border: 1px solid #2a2f42;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.badgeLabel { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; margin-bottom: 6px; }
+.badgeValue { font-size: 15px; font-weight: 600; color: #e8eaf0; }
+
+/* ── Conf bar ── */
+.confBar {
+  background: #151820;
+  border: 1px solid #2a2f42;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+.barBg { background: #2a2f42; border-radius: 100px; height: 6px; overflow: hidden; margin: 8px 0 4px; }
+.barFill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #4f7cff, #a78bfa);
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.confNum { font-size: 13px; color: #6b7280; text-align: right; display: block; }
