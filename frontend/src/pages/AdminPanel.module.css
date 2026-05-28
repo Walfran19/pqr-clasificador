@@ -116,3 +116,100 @@
   .statsGrid { grid-template-columns: repeat(2, 1fr); }
   .detalleGrid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Tab navigation ── */
+.tabNav { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+.tabBtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: inherit; font-size: 13px; font-weight: 500;
+  color: var(--text-3); cursor: pointer; transition: all 0.15s;
+}
+.tabBtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.tabActive { border-color: var(--accent) !important; color: var(--accent) !important; background: var(--accent-bg) !important; font-weight: 600; }
+.btnRefreshTab {
+  margin-left: auto; display: inline-flex; align-items: center;
+  padding: 9px 12px; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 10px; color: var(--text-3); cursor: pointer; transition: all 0.15s;
+}
+.btnRefreshTab:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.btnRefreshTab:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Dashboard layout ── */
+.dash { display: flex; flex-direction: column; gap: 20px; }
+
+.dashKpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.kpiCard {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; display: flex; align-items: flex-start; gap: 12px; box-shadow: var(--shadow-sm);
+}
+.kpiIcon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.kpiBody { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.kpiValue { font-size: 26px; font-weight: 800; line-height: 1; }
+.kpiLabel { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 2px; }
+.kpiSub   { font-size: 11px; color: var(--text-4); }
+
+/* ── Charts grid ── */
+.dashGrid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.dashCard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.dashCardHeader {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+.dashCardIcon { color: var(--accent); flex-shrink: 0; }
+.dashCardBtn {
+  margin-left: auto; font-size: 12px; color: var(--accent); background: none; border: none;
+  cursor: pointer; font-family: inherit; padding: 0; font-weight: 600;
+}
+.dashCardBtn:hover { text-decoration: underline; }
+
+/* ── Trend chart ── */
+.trendSvg { width: 100%; height: auto; display: block; }
+
+/* ── Category bars ── */
+.catBars { display: flex; flex-direction: column; gap: 10px; }
+.catBar  {}
+.catBarLabel { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; color: var(--text-2); }
+.catBarVal   { font-weight: 600; font-size: 11px; }
+.catBarTrack { height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.catBarFill  { height: 100%; border-radius: 100px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ── Recent table ── */
+.recentTable { width: 100%; border-collapse: collapse; }
+.recentTable th { padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.recentTable td { padding: 10px 10px; font-size: 13px; color: var(--text-2); border-bottom: 1px solid var(--border-2); vertical-align: middle; }
+.recentTable tbody tr:last-child td { border-bottom: none; }
+
+/* ── Donut chart ── */
+.donutWrap    { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.donutOuter   { width: 140px; height: 140px; border-radius: 50%; position: relative; flex-shrink: 0; }
+.donutHole    {
+  position: absolute; inset: 28px; background: var(--surface); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+}
+.donutTotal      { font-size: 22px; font-weight: 800; color: var(--text); }
+.donutTotalLabel { font-size: 10px; color: var(--text-4); font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
+.donutLegend     { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.donutLegendItem { display: flex; align-items: center; gap: 8px; }
+.donutDot        { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.donutLegendLabel { flex: 1; font-size: 13px; color: var(--text-2); }
+.donutLegendVal  { font-size: 13px; font-weight: 700; }
+
+.noData { color: var(--text-4); font-size: 13px; padding: 20px 0; text-align: center; margin: 0; }
+
+/* ── Dashboard responsive ── */
+@media (max-width: 1200px) {
+  .dashKpis { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .dashGrid  { grid-template-columns: 1fr; }
+  .dashKpis  { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .dashKpis  { grid-template-columns: repeat(2, 1fr); }
+  .recentTable th:nth-child(3), .recentTable td:nth-child(3),
+  .recentTable th:nth-child(4), .recentTable td:nth-child(4) { display: none; }
+}

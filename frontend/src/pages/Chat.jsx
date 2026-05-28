@@ -361,7 +361,7 @@ export default function Chat() {
           </div>
 
           <div className={styles.channelRow}>
-            <a href="https://wa.me/573105260516" target="_blank" rel="noopener noreferrer" className={styles.chWa}>
+            <a href="https://wa.me/573105260516?text=Hola%2C%20vengo%20a%20dejar%20una%20PQR" target="_blank" rel="noopener noreferrer" className={styles.chWa}>
               <MessageCircle size={13} /> WhatsApp
             </a>
             <a href="https://t.me/SistemaPQR_Bot" target="_blank" rel="noopener noreferrer" className={styles.chTg}>
