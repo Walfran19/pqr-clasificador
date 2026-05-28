@@ -2,6 +2,7 @@ const { db } = require("../models/database");
 const { clasificarPQR } = require("../services/classifier.service");
 const { generarCodigo } = require("../services/codigo.service");
 const { enviarConfirmacionRadicacion, enviarCambioEstado, enviarRespuestaDisponible } = require("../services/email.service");
+const { notificarCambioEstado, notificarRespuesta } = require("../services/wa-flow.service");
 
 // POST /api/pqr — radicar y clasificar
 async function radicar(req, res) {
@@ -102,6 +103,7 @@ function cambiarEstado(req, res) {
 
   // Fire-and-forget: no bloquea la respuesta
   enviarCambioEstado(pqr.nombre, pqr.email, codigo.toUpperCase(), estado).catch(() => {});
+  notificarCambioEstado(pqr.email, codigo.toUpperCase(), estado).catch(() => {});
 }
 
 // GET /api/pqr/admin/stats — métricas para dashboard
@@ -168,6 +170,7 @@ function actualizarRespuesta(req, res) {
 
   // Fire-and-forget: no bloquea la respuesta
   enviarRespuestaDisponible(pqr.nombre, pqr.email, codigo.toUpperCase(), respuesta.trim()).catch(() => {});
+  notificarRespuesta(pqr.email, codigo.toUpperCase(), respuesta.trim()).catch(() => {});
 }
 
 // PUT /api/pqr/:codigo/aprobar — admin aprueba la respuesta generada por IA
@@ -186,6 +189,7 @@ function aprobarRespuesta(req, res) {
   // Fire-and-forget: no bloquea la respuesta
   if (pqr.respuesta) {
     enviarRespuestaDisponible(pqr.nombre, pqr.email, codigo.toUpperCase(), pqr.respuesta).catch(() => {});
+    notificarRespuesta(pqr.email, codigo.toUpperCase(), pqr.respuesta).catch(() => {});
   }
 }
 

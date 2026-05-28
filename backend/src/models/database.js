@@ -47,6 +47,20 @@ function inicializar() {
   `);
   try { db.exec("ALTER TABLE usuarios ADD COLUMN cedula TEXT"); } catch {}
 
+  // Tabla de conversaciones WhatsApp (estado por número de teléfono)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS conversaciones_wa (
+      phone                TEXT PRIMARY KEY,
+      paso                 TEXT DEFAULT 'nombre',
+      nombre               TEXT,
+      cedula               TEXT,
+      email                TEXT,
+      ultimo_codigo        TEXT,
+      ultima_clasificacion TEXT,
+      updated_at           TEXT DEFAULT (datetime('now','localtime'))
+    )
+  `);
+
   // Índices para mejorar rendimiento en consultas frecuentes
   db.exec("CREATE INDEX IF NOT EXISTS idx_pqr_codigo    ON pqr(codigo)");
   db.exec("CREATE INDEX IF NOT EXISTS idx_pqr_cedula    ON pqr(cedula)");
