@@ -1,6 +1,6 @@
 const rateLimit = require("express-rate-limit");
 const router = require("express").Router();
-const { radicar, consultar, consultarPorCedula, listar, cambiarEstado, stats, historial, actualizarRespuesta, aprobarRespuesta } = require("../controllers/pqr.controller");
+const { radicar, consultar, consultarPorCedula, consultarPorEmail, listar, cambiarEstado, stats, historial, actualizarRespuesta, aprobarRespuesta } = require("../controllers/pqr.controller");
 const { verificarToken, verificarTokenOpcional, verificarAdmin } = require("../controllers/auth.controller");
 
 const limiterRadicar = rateLimit({
@@ -21,8 +21,9 @@ router.put("/:codigo/aprobar",      verificarToken, verificarAdmin, aprobarRespu
 // Ruta de historial del usuario autenticado
 router.get("/user/historial",  verificarToken, historial);
 
-// Consulta pública por cédula
+// Consulta pública por cédula o email
 router.get("/cedula/:cedula",  consultarPorCedula);
+router.get("/email/:email",    consultarPorEmail);
 
 // Rutas públicas (radicar acepta token opcional para asociar al usuario)
 router.post("/",               limiterRadicar, verificarTokenOpcional, radicar);

@@ -128,6 +128,16 @@ function consultarPorCedula(req, res) {
   res.json({ ok: true, pqrs, total: pqrs.length });
 }
 
+// GET /api/pqr/email/:email — verificar si un correo tiene casos registrados
+function consultarPorEmail(req, res) {
+  const email = req.params.email.trim().toLowerCase();
+  const pqrs = db.prepare(
+    "SELECT codigo, tipo, categoria, estado, fecha FROM pqr WHERE LOWER(email) = ? ORDER BY fecha DESC LIMIT 5"
+  ).all(email);
+
+  res.json({ ok: true, pqrs, total: pqrs.length });
+}
+
 // GET /api/pqr/user/historial — historial del usuario autenticado
 function historial(req, res) {
   const pqrs = db.prepare(
@@ -179,4 +189,4 @@ function aprobarRespuesta(req, res) {
   }
 }
 
-module.exports = { radicar, consultar, consultarPorCedula, listar, cambiarEstado, stats, historial, actualizarRespuesta, aprobarRespuesta };
+module.exports = { radicar, consultar, consultarPorCedula, consultarPorEmail, listar, cambiarEstado, stats, historial, actualizarRespuesta, aprobarRespuesta };
