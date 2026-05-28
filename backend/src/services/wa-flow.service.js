@@ -119,11 +119,13 @@ async function procesarMensaje(phone, texto) {
     return;
   }
 
-  // Usuario que vuelve después de inactividad con datos completos
-  if (estaInactivo(conv) && conv.nombre && conv.cedula && conv.email && conv.paso !== "procesando") {
-    saveConv(phone, { paso: "caso" });
-    conv = { ...conv, paso: "caso" };
-    await responder(phone, `👋 ¡Hola de nuevo, *${conv.nombre}*! ¿Qué petición, queja o reclamo tienes hoy?`);
+  // Usuario que vuelve después de inactividad → pedir datos frescos
+  if (estaInactivo(conv) && conv.paso !== "procesando") {
+    saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await responder(phone,
+      "👋 ¡Bienvenido de nuevo! Para radicar un nuevo caso necesito tus datos.",
+      "¿Cuál es tu *nombre completo*?"
+    );
     return;
   }
 
@@ -255,8 +257,11 @@ async function procesarMensaje(phone, texto) {
 
     const respuesta = respuestaFollowup(txt, clasificacion, codigo);
     if (respuesta === null) {
-      saveConv(phone, { paso: "caso", ultimo_codigo: null, ultima_clasificacion: null });
-      await responder(phone, "📝 Claro, cuéntame tu nuevo caso con detalle.");
+      saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await responder(phone,
+        "📝 Claro, vamos a radicar un nuevo caso.",
+        "¿Cuál es tu *nombre completo*?"
+      );
     } else {
       await responder(phone, respuesta);
     }

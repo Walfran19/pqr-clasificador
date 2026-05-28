@@ -117,11 +117,13 @@ async function procesarMensajeTG(chatId, texto) {
     return;
   }
 
-  // Usuario que vuelve después de inactividad
-  if (estaInactivo(conv) && conv.nombre && conv.cedula && conv.email && conv.paso !== "procesando") {
-    saveConv(chatId, { paso: "caso" });
-    conv = { ...conv, paso: "caso" };
-    await responder(chatId, `👋 ¡Hola de nuevo, *${conv.nombre}*! ¿Qué petición, queja o reclamo tienes hoy?`);
+  // Usuario que vuelve después de inactividad → pedir datos frescos
+  if (estaInactivo(conv) && conv.paso !== "procesando") {
+    saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await responder(chatId,
+      "👋 ¡Bienvenido de nuevo! Para radicar un nuevo caso necesito tus datos.",
+      "¿Cuál es tu *nombre completo*?"
+    );
     return;
   }
 
@@ -253,8 +255,11 @@ async function procesarMensajeTG(chatId, texto) {
 
     const respuesta = respuestaFollowup(txt, clasificacion, codigo);
     if (respuesta === null) {
-      saveConv(chatId, { paso: "caso", ultimo_codigo: null, ultima_clasificacion: null });
-      await responder(chatId, "📝 Claro, cuéntame tu nuevo caso con detalle.");
+      saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await responder(chatId,
+        "📝 Claro, vamos a radicar un nuevo caso.",
+        "¿Cuál es tu *nombre completo*?"
+      );
     } else {
       await responder(chatId, respuesta);
     }
