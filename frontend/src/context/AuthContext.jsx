@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { loginAdmin } from "../services/pqr.service";
+import { loginUsuario, registrarUsuario } from "../services/pqr.service";
 
 const AuthContext = createContext(null);
 
@@ -9,11 +9,22 @@ export function AuthProvider({ children }) {
     return guardado ? JSON.parse(guardado) : null;
   });
 
-  async function login(email, password) {
-    const { data } = await loginAdmin({ email, password });
+  function _guardarSesion(data) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("usuario", JSON.stringify(data.usuario));
     setUsuario(data.usuario);
+  }
+
+  async function login(email, password) {
+    const { data } = await loginUsuario({ email, password });
+    _guardarSesion(data);
+    return data.usuario;
+  }
+
+  async function register(nombre, email, password, cedula) {
+    const { data } = await registrarUsuario({ nombre, cedula: cedula || undefined, email, password });
+    _guardarSesion(data);
+    return data.usuario;
   }
 
   function logout() {
@@ -23,13 +34,12 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook personalizado para usar el contexto fácilmente
 export function useAuth() {
   return useContext(AuthContext);
 }
