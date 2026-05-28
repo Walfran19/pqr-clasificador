@@ -114,8 +114,21 @@ function stats(req, res) {
   const porEstado    = db.prepare("SELECT estado, COUNT(*) as n FROM pqr GROUP BY estado").all();
   const porCategoria = db.prepare("SELECT categoria, COUNT(*) as n FROM pqr GROUP BY categoria").all();
   const porPrioridad = db.prepare("SELECT prioridad, COUNT(*) as n FROM pqr GROUP BY prioridad").all();
+  const porDia       = db.prepare(`
+    SELECT DATE(fecha) as dia, COUNT(*) as n
+    FROM pqr
+    WHERE fecha >= datetime('now', '-29 days')
+    GROUP BY DATE(fecha)
+    ORDER BY dia
+  `).all();
+  const sinRespuesta = db.prepare(
+    "SELECT COUNT(*) as n FROM pqr WHERE respuesta_aprobada = 0 OR respuesta_aprobada IS NULL"
+  ).get().n;
+  const recientes = db.prepare(
+    "SELECT codigo, nombre, categoria, prioridad, estado, fecha FROM pqr ORDER BY fecha DESC LIMIT 6"
+  ).all();
 
-  res.json({ ok: true, total, porEstado, porCategoria, porPrioridad });
+  res.json({ ok: true, total, porEstado, porCategoria, porPrioridad, porDia, sinRespuesta, recientes });
 }
 
 // GET /api/pqr/cedula/:cedula — consultar todos los casos de una cédula
