@@ -6,7 +6,7 @@ const client = new OpenAI({
 });
 
 async function clasificarPQR(texto) {
-  const prompt = `Eres un sistema experto en gestión de PQR para instituciones educativas colombianas.
+  const prompt = `Eres un asistente experto en gestión de PQR para instituciones educativas colombianas.
 Analiza el siguiente mensaje y responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin bloques de código, sin explicaciones.
 
 Mensaje: "${texto}"
@@ -19,6 +19,7 @@ Responde con este JSON exacto:
   "sentimiento": "Urgente" o "Negativo" o "Neutral" o "Positivo",
   "area_responsable": "Coordinación académica" o "Tesorería" o "Registro y control" o "Bienestar" o "Soporte TI" o "Dirección",
   "resumen": "Una sola frase corta que describe el problema",
+  "respuesta": "Respuesta institucional completa, cordial y profesional dirigida al usuario. Debe: confirmar que se recibió su caso, explicar el proceso a seguir, indicar el área responsable que lo atenderá, dar un estimado de tiempo de respuesta según la prioridad (Alta: 24h, Media: 3 días hábiles, Baja: 5 días hábiles), y en casos comunes ofrecer una solución o guía inmediata. Mínimo 3 oraciones.",
   "confianza": número entre 0 y 1
 }
 

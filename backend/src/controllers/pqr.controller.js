@@ -1,34 +1,45 @@
 const { db } = require("../models/database");
 const { clasificarPQR } = require("../services/classifier.service");
 const { generarCodigo } = require("../services/codigo.service");
+const { enviarConfirmacionRadicacion, enviarCambioEstado, enviarRespuestaDisponible } = require("../services/email.service");
 
 // POST /api/pqr — radicar y clasificar
 async function radicar(req, res) {
-  const { texto, nombre, email } = req.body;
+  const { texto, nombre, cedula, email } = req.body;
 
   if (!texto || !nombre || !email) {
     return res.status(400).json({ ok: false, error: "Los campos texto, nombre y email son requeridos." });
   }
 
+  if (texto.length > 5000) {
+    return res.status(400).json({ ok: false, error: "El texto no puede superar los 5000 caracteres." });
+  }
+
   try {
     const clasificacion = await clasificarPQR(texto);
     const codigo = generarCodigo();
+    const usuario_id = req.usuario?.id || null;
 
     db.prepare(`
-      INSERT INTO pqr (codigo, texto, nombre, email, tipo, categoria, prioridad, sentimiento, area, resumen, confianza)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO pqr (codigo, texto, nombre, cedula, email, tipo, categoria, prioridad, sentimiento, area, resumen, respuesta, confianza, usuario_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      codigo, texto, nombre, email,
+      codigo, texto, nombre, cedula || null, email,
       clasificacion.tipo,
       clasificacion.categoria,
       clasificacion.prioridad,
       clasificacion.sentimiento,
       clasificacion.area_responsable,
       clasificacion.resumen,
-      clasificacion.confianza
+      clasificacion.respuesta || null,
+      clasificacion.confianza,
+      usuario_id
     );
 
     res.json({ ok: true, codigo, clasificacion });
+
+    // Fire-and-forget: no bloquea la respuesta
+    enviarConfirmacionRadicacion(nombre, email, codigo, clasificacion).catch(() => {});
 
   } catch (error) {
     console.error("Error al radicar PQR:", error.message);
@@ -48,21 +59,26 @@ function consultar(req, res) {
   res.json({ ok: true, pqr });
 }
 
-// GET /api/pqr/admin/listar — listar todas (admin)
+// GET /api/pqr/admin/listar — listar con filtros y paginación (admin)
 function listar(req, res) {
   const { estado, categoria, prioridad } = req.query;
+  const page  = Math.max(1, parseInt(req.query.page)  || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+  const offset = (page - 1) * limit;
 
-  let query = "SELECT * FROM pqr WHERE 1=1";
+  let condicion = "WHERE 1=1";
   const params = [];
 
-  if (estado)    { query += " AND estado = ?";    params.push(estado); }
-  if (categoria) { query += " AND categoria = ?"; params.push(categoria); }
-  if (prioridad) { query += " AND prioridad = ?"; params.push(prioridad); }
+  if (estado)    { condicion += " AND estado = ?";    params.push(estado); }
+  if (categoria) { condicion += " AND categoria = ?"; params.push(categoria); }
+  if (prioridad) { condicion += " AND prioridad = ?"; params.push(prioridad); }
 
-  query += " ORDER BY CASE prioridad WHEN 'Alta' THEN 1 WHEN 'Media' THEN 2 ELSE 3 END, fecha DESC";
+  const orden = " ORDER BY CASE prioridad WHEN 'Alta' THEN 1 WHEN 'Media' THEN 2 ELSE 3 END, fecha DESC";
 
-  const pqrs = db.prepare(query).all(...params);
-  res.json({ ok: true, pqrs, total: pqrs.length });
+  const total = db.prepare(`SELECT COUNT(*) as n FROM pqr ${condicion}`).get(...params).n;
+  const pqrs  = db.prepare(`SELECT * FROM pqr ${condicion}${orden} LIMIT ? OFFSET ?`).all(...params, limit, offset);
+
+  res.json({ ok: true, pqrs, total, page, limit, totalPages: Math.ceil(total / limit) });
 }
 
 // PUT /api/pqr/:codigo/estado — cambiar estado (admin)
@@ -75,13 +91,17 @@ function cambiarEstado(req, res) {
     return res.status(400).json({ ok: false, error: "Estado inválido." });
   }
 
-  const result = db.prepare("UPDATE pqr SET estado = ? WHERE codigo = ?").run(estado, codigo);
-
-  if (result.changes === 0) {
+  const pqr = db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  if (!pqr) {
     return res.status(404).json({ ok: false, error: "PQR no encontrada." });
   }
 
+  db.prepare("UPDATE pqr SET estado = ? WHERE codigo = ?").run(estado, codigo.toUpperCase());
+
   res.json({ ok: true, mensaje: `Estado actualizado a '${estado}'.` });
+
+  // Fire-and-forget: no bloquea la respuesta
+  enviarCambioEstado(pqr.nombre, pqr.email, codigo.toUpperCase(), estado).catch(() => {});
 }
 
 // GET /api/pqr/admin/stats — métricas para dashboard
@@ -94,4 +114,69 @@ function stats(req, res) {
   res.json({ ok: true, total, porEstado, porCategoria, porPrioridad });
 }
 
-module.exports = { radicar, consultar, listar, cambiarEstado, stats };
+// GET /api/pqr/cedula/:cedula — consultar todos los casos de una cédula
+function consultarPorCedula(req, res) {
+  const { cedula } = req.params;
+  const pqrs = db.prepare(
+    "SELECT * FROM pqr WHERE cedula = ? ORDER BY fecha DESC"
+  ).all(cedula.trim());
+
+  if (pqrs.length === 0) {
+    return res.status(404).json({ ok: false, error: "No se encontraron casos para esa cédula." });
+  }
+
+  res.json({ ok: true, pqrs, total: pqrs.length });
+}
+
+// GET /api/pqr/user/historial — historial del usuario autenticado
+function historial(req, res) {
+  const pqrs = db.prepare(
+    "SELECT * FROM pqr WHERE usuario_id = ? ORDER BY fecha DESC"
+  ).all(req.usuario.id);
+  res.json({ ok: true, pqrs, total: pqrs.length });
+}
+
+// PUT /api/pqr/:codigo/respuesta — admin escribe o edita la respuesta
+function actualizarRespuesta(req, res) {
+  const { codigo } = req.params;
+  const { respuesta } = req.body;
+
+  if (!respuesta || !respuesta.trim()) {
+    return res.status(400).json({ ok: false, error: "La respuesta no puede estar vacía." });
+  }
+
+  const pqr = db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  if (!pqr) {
+    return res.status(404).json({ ok: false, error: "PQR no encontrada." });
+  }
+
+  db.prepare(
+    "UPDATE pqr SET respuesta = ?, respuesta_aprobada = 1 WHERE codigo = ?"
+  ).run(respuesta.trim(), codigo.toUpperCase());
+
+  res.json({ ok: true, mensaje: "Respuesta actualizada y aprobada." });
+
+  // Fire-and-forget: no bloquea la respuesta
+  enviarRespuestaDisponible(pqr.nombre, pqr.email, codigo.toUpperCase(), respuesta.trim()).catch(() => {});
+}
+
+// PUT /api/pqr/:codigo/aprobar — admin aprueba la respuesta generada por IA
+function aprobarRespuesta(req, res) {
+  const { codigo } = req.params;
+
+  const pqr = db.prepare("SELECT nombre, email, respuesta FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  if (!pqr) {
+    return res.status(404).json({ ok: false, error: "PQR no encontrada." });
+  }
+
+  db.prepare("UPDATE pqr SET respuesta_aprobada = 1 WHERE codigo = ?").run(codigo.toUpperCase());
+
+  res.json({ ok: true, mensaje: "Respuesta de la IA aprobada." });
+
+  // Fire-and-forget: no bloquea la respuesta
+  if (pqr.respuesta) {
+    enviarRespuestaDisponible(pqr.nombre, pqr.email, codigo.toUpperCase(), pqr.respuesta).catch(() => {});
+  }
+}
+
+module.exports = { radicar, consultar, consultarPorCedula, listar, cambiarEstado, stats, historial, actualizarRespuesta, aprobarRespuesta };
