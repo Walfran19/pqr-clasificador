@@ -19,6 +19,15 @@ if (process.env.WHATSAPP_ENABLED !== "false") {
   );
 }
 
+// Iniciar Telegram (sin bloquear el servidor)
+if (process.env.TELEGRAM_ENABLED !== "false") {
+  const { iniciarTelegram }   = require("./src/services/telegram.service");
+  const { manejarMensajeTG }  = require("./src/services/telegram-flow.service");
+  iniciarTelegram(manejarMensajeTG).catch(err =>
+    console.error("[Telegram] Error al iniciar:", err.message)
+  );
+}
+
 // Rutas
 app.use("/api/pqr",  require("./src/routes/pqr.routes"));
 app.use("/api/auth", require("./src/routes/auth.routes"));

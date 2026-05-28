@@ -61,6 +61,20 @@ function inicializar() {
     )
   `);
 
+  // Tabla de conversaciones Telegram (estado por chat_id)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS conversaciones_tg (
+      chat_id              TEXT PRIMARY KEY,
+      paso                 TEXT DEFAULT 'nombre',
+      nombre               TEXT,
+      cedula               TEXT,
+      email                TEXT,
+      ultimo_codigo        TEXT,
+      ultima_clasificacion TEXT,
+      updated_at           TEXT DEFAULT (datetime('now','localtime'))
+    )
+  `);
+
   // Índices para mejorar rendimiento en consultas frecuentes
   db.exec("CREATE INDEX IF NOT EXISTS idx_pqr_codigo    ON pqr(codigo)");
   db.exec("CREATE INDEX IF NOT EXISTS idx_pqr_cedula    ON pqr(cedula)");

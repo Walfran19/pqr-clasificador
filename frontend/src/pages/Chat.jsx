@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Bot, Send, Sparkles, CheckCircle2, FileText, Loader2,
-  ClipboardList, Search, History, MessageSquare, ChevronRight, Plus,
+  ClipboardList, Search, History, MessageSquare, ChevronRight, Plus, MessageCircle,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChatContext } from "../context/ChatContext";
@@ -293,6 +293,38 @@ export default function Chat() {
               <Link to="/login" className={styles.sideLoginBtn}>Iniciar sesión</Link>
             </div>
           )}
+
+          <a
+            href="https://wa.me/573105260516"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.sideWaCard}
+          >
+            <div className={styles.sideWaIcon}>
+              <MessageCircle size={22} />
+            </div>
+            <div>
+              <p className={styles.sideWaTitle}>¿Prefieres WhatsApp?</p>
+              <p className={styles.sideWaDesc}>Radica tu PQR directamente desde WhatsApp con nuestro asistente.</p>
+              <span className={styles.sideWaBtn}>Abrir WhatsApp <ChevronRight size={13} /></span>
+            </div>
+          </a>
+
+          <a
+            href="https://t.me/SistemaPQR_Bot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.sideTgCard}
+          >
+            <div className={styles.sideTgIcon}>
+              <Send size={20} />
+            </div>
+            <div>
+              <p className={styles.sideTgTitle}>¿Prefieres Telegram?</p>
+              <p className={styles.sideTgDesc}>Radica tu PQR desde Telegram con nuestro asistente.</p>
+              <span className={styles.sideTgBtn}>Abrir Telegram <ChevronRight size={13} /></span>
+            </div>
+          </a>
 
           <div className={styles.sideCard}>
             <h4>Consultar estado</h4>

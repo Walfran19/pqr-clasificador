@@ -59,6 +59,8 @@ async function iniciarWhatsApp(onMensaje) {
     for (const msg of messages) {
       if (msg.key.fromMe || !msg.message) continue;
       if (msg.key.remoteJid === "status@broadcast") continue;
+      const tipos = Object.keys(msg.message || {}).join(", ");
+      console.log(`[WhatsApp] Mensaje entrante de ${msg.key.remoteJid} | tipos: ${tipos}`);
       try {
         await onMensaje(msg);
       } catch (err) {
@@ -94,11 +96,25 @@ async function descargarAudio(msg) {
 
 function obtenerTextoMensaje(msg) {
   const m = msg.message;
+  if (!m) return "";
+
+  // Desempaquetar capas de wrapping (mensajes efímeros, viewOnce, etc.)
+  const inner =
+    m.ephemeralMessage?.message ||
+    m.viewOnceMessage?.message ||
+    m.viewOnceMessageV2?.message?.viewOnceMessage?.message ||
+    m.documentWithCaptionMessage?.message ||
+    m;
+
   return (
-    m?.conversation ||
-    m?.extendedTextMessage?.text ||
-    m?.buttonsResponseMessage?.selectedDisplayText ||
-    m?.listResponseMessage?.title ||
+    inner.conversation ||
+    inner.extendedTextMessage?.text ||
+    inner.imageMessage?.caption ||
+    inner.videoMessage?.caption ||
+    inner.documentMessage?.caption ||
+    inner.buttonsResponseMessage?.selectedDisplayText ||
+    inner.listResponseMessage?.title ||
+    inner.templateButtonReplyMessage?.selectedId ||
     ""
   );
 }
