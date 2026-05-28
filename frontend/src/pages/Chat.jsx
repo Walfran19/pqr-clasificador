@@ -5,7 +5,8 @@ import {
   ClipboardList, Search, History, MessageSquare, ChevronRight, Plus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { radicarPQR } from "../services/pqr.service";
+import { useChatContext } from "../context/ChatContext";
+import { radicarPQR, consultarPorEmail } from "../services/pqr.service";
 import Navbar from "../components/Navbar";
 import styles from "./Chat.module.css";
 
@@ -80,20 +81,21 @@ function responderFollowup(pregunta, resultado) {
 
 export default function Chat() {
   const { usuario } = useAuth();
+  const { mensajes, setMensajes, paso, setPaso, datos, setDatos, resultado, setResultado } = useChatContext();
 
-  const [paso, setPaso]           = useState(() => pasosIniciales(usuario));
-  const [datos, setDatos]         = useState({
-    nombre: usuario?.nombre || "",
-    cedula: usuario?.cedula || "",
-    email:  usuario?.email  || "",
-  });
-  const [mensajes, setMensajes]   = useState([]);
-  const [input, setInput]         = useState("");
-  const [resultado, setResultado] = useState(null);
+  const [input, setInput] = useState("");
   const bottomRef = useRef(null);
   const inputRef  = useRef(null);
 
+  // Inicializar solo la primera vez (mensajes === null significa no inicializado)
   useEffect(() => {
+    if (mensajes !== null) return;
+    setPaso(pasosIniciales(usuario));
+    setDatos({
+      nombre: usuario?.nombre || "",
+      cedula: usuario?.cedula || "",
+      email:  usuario?.email  || "",
+    });
     const ms = [];
     if (!usuario) {
       ms.push(
@@ -116,7 +118,7 @@ export default function Chat() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [mensajes]);
   useEffect(() => {
-    if (paso !== "procesando") inputRef.current?.focus();
+    if (paso && paso !== "procesando") inputRef.current?.focus();
   }, [paso, mensajes]);
 
   function msg(de, texto, tipo = null) { return { de, texto, tipo, hora: hora() }; }
@@ -124,7 +126,7 @@ export default function Chat() {
 
   async function enviar(texto) {
     const txt = texto.trim();
-    if (!txt || paso === "procesando") return;
+    if (!txt || !paso || paso === "procesando") return;
     setInput("");
     push(msg("user", txt));
 
@@ -167,10 +169,31 @@ export default function Chat() {
       }
       setDatos(d => ({ ...d, email: txt }));
       setPaso("caso");
-      setTimeout(() => push(
-        msg("bot", "Datos registrados correctamente."),
-        msg("bot", "Ahora cuéntame tu caso. ¿Qué petición, queja o reclamo tienes?")
-      ), 300);
+
+      try {
+        const { data } = await consultarPorEmail(txt);
+        if (data.total > 0) {
+          const ultimo = data.pqrs[0];
+          const resumen = data.total === 1
+            ? `Encontré 1 caso registrado con este correo (${ultimo.codigo} — ${ultimo.estado}).`
+            : `Encontré ${data.total} casos registrados con este correo. El más reciente: ${ultimo.codigo} — ${ultimo.estado}.`;
+          setTimeout(() => push(
+            msg("bot", `Hola de nuevo, ${datos.nombre}. Ya eres un usuario registrado en el sistema.`),
+            msg("bot", resumen),
+            msg("bot", "Puedes consultar tus casos en cualquier momento desde la sección 'Consultar estado'. ¿Quieres radicar un nuevo caso ahora?")
+          ), 300);
+        } else {
+          setTimeout(() => push(
+            msg("bot", "Correo registrado correctamente."),
+            msg("bot", "Cuéntame tu caso con el mayor detalle posible. ¿Qué petición, queja o reclamo tienes?")
+          ), 300);
+        }
+      } catch {
+        setTimeout(() => push(
+          msg("bot", "Correo registrado correctamente."),
+          msg("bot", "Cuéntame tu caso con el mayor detalle posible. ¿Qué petición, queja o reclamo tienes?")
+        ), 300);
+      }
       return;
     }
 
@@ -180,7 +203,7 @@ export default function Chat() {
         return;
       }
       setPaso("procesando");
-      setTimeout(() => push(msg("bot", "Analizando tu caso con inteligencia artificial...")), 300);
+      setTimeout(() => push(msg("bot", "Evaluando su caso... espere un momento.")), 300);
 
       try {
         const { data } = await radicarPQR({
@@ -236,6 +259,8 @@ export default function Chat() {
 
   const mostrarChips = paso === "caso" || paso === "followup";
   const chipsActuales = paso === "followup" ? SUGERENCIAS_FOLLOWUP : SUGERENCIAS;
+
+  if (!mensajes) return null;
 
   return (
     <div className={styles.page}>

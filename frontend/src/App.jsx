@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 import Chat from "./pages/Chat";
 import ConsultarPQR from "./pages/ConsultarPQR";
 import AdminPanel from "./pages/AdminPanel";
@@ -21,6 +22,7 @@ function RutaUsuario({ children }) {
 export default function App() {
   return (
     <AuthProvider>
+      <ChatProvider>
       <Routes>
         <Route path="/"          element={<Navigate to="/chat" replace />} />
         <Route path="/chat"      element={<Chat />} />
@@ -38,6 +40,7 @@ export default function App() {
         } />
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Routes>
+      </ChatProvider>
     </AuthProvider>
   );
 }

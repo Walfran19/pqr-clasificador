@@ -13,6 +13,7 @@ api.interceptors.request.use((config) => {
 export const radicarPQR          = (datos)          => api.post("/pqr", datos);
 export const consultarPQR        = (codigo)         => api.get(`/pqr/${codigo}`);
 export const consultarPorCedula  = (cedula)         => api.get(`/pqr/cedula/${cedula}`);
+export const consultarPorEmail   = (email)          => api.get(`/pqr/email/${encodeURIComponent(email)}`);
 export const listarPQR           = (filtros = {}, page = 1, limit = 20) => api.get("/pqr/admin/listar", { params: { ...filtros, page, limit } });
 export const cambiarEstadoPQR    = (codigo, estado)    => api.put(`/pqr/${codigo}/estado`, { estado });
 export const actualizarRespuestaPQR = (codigo, respuesta) => api.put(`/pqr/${codigo}/respuesta`, { respuesta });
