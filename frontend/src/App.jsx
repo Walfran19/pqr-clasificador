@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ChatProvider } from "./context/ChatContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import Chat from "./pages/Chat";
 import ConsultarPQR from "./pages/ConsultarPQR";
 import AdminPanel from "./pages/AdminPanel";
@@ -21,6 +22,7 @@ function RutaUsuario({ children }) {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <ChatProvider>
       <Routes>
@@ -42,5 +44,6 @@ export default function App() {
       </Routes>
       </ChatProvider>
     </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -1,13 +1,15 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutGrid, MessageSquare, Search, ClipboardList,
-  ShieldCheck, LogOut, LogIn, User,
+  ShieldCheck, LogOut, LogIn, User, Sun, Moon,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import styles from "./Navbar.module.css";
 
-export default function Navbar() {
+export default function Navbar({ dark = false }) {
   const { usuario, logout } = useAuth();
+  const { theme, toggle }   = useTheme();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -16,7 +18,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className={styles.bar}>
+    <header className={`${styles.bar} ${dark ? styles.barDark : ""}`}>
       {/* Brand */}
       <Link to="/chat" className={styles.brand}>
         <LayoutGrid size={20} className={styles.brandIcon} />
@@ -37,6 +39,9 @@ export default function Navbar() {
 
       {/* User / auth */}
       <div className={styles.actions}>
+        <button className={styles.themeBtn} onClick={toggle} title={theme === "dark" ? "Modo claro" : "Modo oscuro"}>
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
         {usuario ? (
           <>
             <div className={styles.userChip}>
@@ -58,6 +63,7 @@ export default function Navbar() {
     </header>
   );
 }
+
 
 function NavItem({ to, icon, label }) {
   return (
