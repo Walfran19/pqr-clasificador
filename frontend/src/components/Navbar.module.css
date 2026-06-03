@@ -71,23 +71,24 @@
 }
 .btnLogin:hover { background: var(--accent-h); transform: translateY(-1px); }
 
-/* ── Variante oscura (meet/chat) ── */
+/* ── Variante meet/chat — responde al tema ── */
 .barDark {
-  background: rgba(6, 13, 26, 0.97);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: var(--meet-header-bg);
+  border-bottom: 1px solid var(--meet-header-bd);
+  backdrop-filter: blur(12px);
 }
-.barDark .brand     { color: rgba(255,255,255,0.88); }
-.barDark .brandIcon { color: #60a5fa; }
-.barDark .navItem   { color: rgba(255,255,255,0.5); }
-.barDark .navItem:hover { color: rgba(255,255,255,0.88); background: rgba(255,255,255,0.06); }
-.barDark .navItemActive { color: #60a5fa !important; background: rgba(37,99,235,0.18) !important; }
-.barDark .navItemActive::after { background: #60a5fa; }
-.barDark .themeBtn  { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-.barDark .themeBtn:hover { color: #60a5fa; border-color: rgba(96,165,250,0.4); background: rgba(37,99,235,0.15); }
-.barDark .userChip  { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.55); }
-.barDark .btnLogout { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
-.barDark .btnLogout:hover { color: #f87171; border-color: rgba(248,113,113,0.4); background: rgba(239,68,68,0.08); }
-.barDark .btnLogin  { background: #2563eb; color: #fff; }
+.barDark .brand        { color: var(--meet-header-text); }
+.barDark .brandIcon    { color: var(--accent); }
+.barDark .navItem      { color: var(--meet-chip-text); }
+.barDark .navItem:hover { color: var(--meet-header-text); background: var(--meet-chip-bg); }
+.barDark .navItemActive { color: var(--accent) !important; background: var(--accent-bg) !important; }
+.barDark .navItemActive::after { background: var(--accent); }
+.barDark .themeBtn     { background: var(--meet-chip-bg); border-color: var(--meet-chip-bd); color: var(--meet-chip-text); }
+.barDark .themeBtn:hover { color: var(--accent); border-color: var(--accent-bd); background: var(--accent-bg); }
+.barDark .userChip     { background: var(--meet-chip-bg); border-color: var(--meet-chip-bd); color: var(--meet-chip-text); }
+.barDark .btnLogout    { border-color: var(--meet-chip-bd); color: var(--meet-chip-text); }
+.barDark .btnLogout:hover { color: var(--danger); border-color: var(--danger-bd); background: var(--danger-bg); }
+.barDark .btnLogin     { background: var(--accent); color: #fff; }
 
 @media (max-width: 768px) {
   .nav span { display: none; }

@@ -62,79 +62,63 @@ function responderFollowup(pregunta, resultado) {
   return `Tu caso ${cod} está en manos de ${c.area_responsable} con prioridad ${c.prioridad} (${PLAZOS[c.prioridad] || "5 días hábiles"}). ¿Tienes otra duda?`;
 }
 
-// ─── Avatar 3D ────────────────────────────────────────────────────────────────
+// ─── Avatar ValerIA (DiceBear Adventurer) ─────────────────────────────────────
+
+// ─── Avatar ValerIA 3D ───────────────────────────────────────────────────────
 
 function AvatarIA({ state }) {
-  const avClass = styles[`av_${state}`] || "";
+  const avClass  = styles[`av_${state}`] || "";
+  const wrapRef  = useRef(null);
+  const rafRef   = useRef(null);
+  const tiltRef  = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+
+    function onMove(e) {
+      const { left, top, width, height } = el.getBoundingClientRect();
+      const nx =  (e.clientX - left - width  / 2) / (width  / 2);
+      const ny = -(e.clientY - top  - height / 2) / (height / 2);
+      tiltRef.current = { x: nx * 14, y: ny * 10 };
+    }
+
+    function onLeave() { tiltRef.current = { x: 0, y: 0 }; }
+
+    function loop() {
+      const { x, y } = tiltRef.current;
+      el.style.setProperty("--tx", `${x}deg`);
+      el.style.setProperty("--ty", `${y}deg`);
+      rafRef.current = requestAnimationFrame(loop);
+    }
+
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
   return (
-    <div className={`${styles.avContainer} ${avClass}`}>
+    <div ref={wrapRef} className={`${styles.avContainer} ${styles.av3d} ${avClass}`}>
       <div className={styles.avRing1} />
       <div className={styles.avRing2} />
       <div className={styles.avRing3} />
-      <div className={styles.avSphere}>
-        <svg viewBox="0 0 200 200" className={styles.avSvg}>
-          <defs>
-            <radialGradient id="pqr_hg" cx="38%" cy="32%">
-              <stop offset="0%"   stopColor="#1e3a5f" />
-              <stop offset="100%" stopColor="#060d1a" />
-            </radialGradient>
-            <radialGradient id="pqr_eg" cx="30%" cy="30%">
-              <stop offset="0%"   stopColor="#93c5fd" />
-              <stop offset="100%" stopColor="#1d4ed8" />
-            </radialGradient>
-            <filter id="pqr_glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b" />
-              <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-          </defs>
 
-          {/* Cabeza */}
-          <circle cx="100" cy="100" r="90" fill="url(#pqr_hg)" />
-          <circle cx="100" cy="100" r="90" fill="none" stroke="#1e3a8a" strokeWidth="1.2" strokeDasharray="10 5" />
-          <circle cx="100" cy="100" r="80" fill="none" stroke="#1e3a8a" strokeWidth="0.6" opacity="0.5" />
-
-          {/* Visor */}
-          <rect x="24" y="50" width="152" height="88" rx="18" fill="rgba(0,4,16,0.75)" />
-          <rect x="24" y="50" width="152" height="88" rx="18" fill="none" stroke="#1e3a8a" strokeWidth="1" />
-
-          {/* Ojo izquierdo */}
-          <rect x="36" y="58" width="52" height="36" rx="8" fill="rgba(0,0,0,0.55)" />
-          <circle cx="62"  cy="76" r="14" fill="url(#pqr_eg)" filter="url(#pqr_glow)" className={styles.avEye} />
-          <circle cx="62"  cy="76" r="6"  fill="#bfdbfe" />
-          <circle cx="57"  cy="71" r="2.5" fill="#fff" opacity="0.85" />
-
-          {/* Ojo derecho */}
-          <rect x="112" y="58" width="52" height="36" rx="8" fill="rgba(0,0,0,0.55)" />
-          <circle cx="138" cy="76" r="14" fill="url(#pqr_eg)" filter="url(#pqr_glow)" className={styles.avEye} />
-          <circle cx="138" cy="76" r="6"  fill="#bfdbfe" />
-          <circle cx="133" cy="71" r="2.5" fill="#fff" opacity="0.85" />
-
-          {/* Boca — ecualizador */}
-          <g className={`${styles.avBars} ${state === "hablando" ? styles.avBarsTalking : ""}`}>
-            <rect x="52"  y="108" width="7" height="14" rx="2.5" fill="#3b82f6" className={styles.b1} />
-            <rect x="63"  y="104" width="7" height="18" rx="2.5" fill="#3b82f6" className={styles.b2} />
-            <rect x="74"  y="110" width="7" height="12" rx="2.5" fill="#3b82f6" className={styles.b3} />
-            <rect x="85"  y="106" width="7" height="16" rx="2.5" fill="#3b82f6" className={styles.b4} />
-            <rect x="96"  y="108" width="7" height="14" rx="2.5" fill="#3b82f6" className={styles.b5} />
-            <rect x="107" y="105" width="7" height="17" rx="2.5" fill="#3b82f6" className={styles.b6} />
-            <rect x="118" y="109" width="7" height="13" rx="2.5" fill="#3b82f6" className={styles.b7} />
-            <rect x="129" y="107" width="7" height="15" rx="2.5" fill="#3b82f6" className={styles.b8} />
-            <rect x="140" y="110" width="7" height="12" rx="2.5" fill="#3b82f6" className={styles.b9} />
-          </g>
-
-          {/* Antena */}
-          <line x1="100" y1="10" x2="100" y2="22" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="100" cy="8" r="5.5" fill="#60a5fa" className={styles.avAntenna} />
-
-          {/* Detalles laterales */}
-          <line x1="10" y1="95"  x2="24" y2="95"  stroke="#1e3a8a" strokeWidth="1.2" opacity="0.7" />
-          <line x1="10" y1="105" x2="24" y2="105" stroke="#1e3a8a" strokeWidth="1.2" opacity="0.7" />
-          <line x1="176" y1="95"  x2="190" y2="95"  stroke="#1e3a8a" strokeWidth="1.2" opacity="0.7" />
-          <line x1="176" y1="105" x2="190" y2="105" stroke="#1e3a8a" strokeWidth="1.2" opacity="0.7" />
-          <circle cx="9"   cy="100" r="3" fill="#1e40af" opacity="0.8" />
-          <circle cx="191" cy="100" r="3" fill="#1e40af" opacity="0.8" />
-        </svg>
+      <div
+        className={styles.avSphere}
+        style={{ backgroundImage: "url('/valeria.png')" }}
+      >
+        <div className={styles.avHoloOverlay} />
+        <div className={`${styles.avMouthPulse} ${state === "hablando" ? styles.avMouthPulseOn : ""}`} />
+        {state === "procesando" && <div className={styles.avThinkOverlay} />}
       </div>
+
+      {/* Anillo holográfico interno */}
+      <div className={styles.avHoloRing} />
     </div>
   );
 }
@@ -147,9 +131,117 @@ export default function Chat() {
 
   const [input, setInput]             = useState("");
   const [hablandoActive, setHablando] = useState(false);
-  const bottomRef    = useRef(null);
-  const inputRef     = useRef(null);
-  const prevBotCount = useRef(0);
+  const [bubble, setBubble]           = useState({ text: "", show: false, key: 0 });
+  const bottomRef       = useRef(null);
+  const inputRef        = useRef(null);
+  const prevBotCount    = useRef(0);
+  const bubbleTimerRef  = useRef(null);
+  const pasoInitRef     = useRef(true);
+  const prevBotBubble   = useRef(0);
+  const voicesRef       = useRef([]);
+
+  // ── Síntesis de voz ────────────────────────────────────────────────────────
+
+  const audioRef    = useRef(null); // elemento Audio para ElevenLabs
+  const ELEVEN_KEY  = import.meta.env.VITE_ELEVEN_KEY  || "";
+  // Voice ID por defecto: "Valentina" de ElevenLabs (joven, colombiana, cálida)
+  // Alternativas gratuitas en elevenlabs.io/voice-library filtrando por Spanish
+  const ELEVEN_VOICE = import.meta.env.VITE_ELEVEN_VOICE || "ZF6FPAbjXT4488VcRRnw";
+
+  // Cargar voces Web Speech (fallback)
+  useEffect(() => {
+    function load() { voicesRef.current = window.speechSynthesis?.getVoices() || []; }
+    load();
+    window.speechSynthesis?.addEventListener("voiceschanged", load);
+    return () => {
+      window.speechSynthesis?.removeEventListener("voiceschanged", load);
+      window.speechSynthesis?.cancel();
+      audioRef.current?.pause();
+    };
+  }, []);
+
+  function limpiarTexto(text) {
+    return text
+      .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}]/gu, "")
+      .replace(/[✓✗]/g, "")
+      .trim();
+  }
+
+  // TTS con ElevenLabs (voz natural colombiana juvenil)
+  async function speakElevenLabs(text) {
+    try {
+      const res = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE}`,
+        {
+          method: "POST",
+          headers: {
+            "xi-api-key":   ELEVEN_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+            model_id: "eleven_multilingual_v2",
+            voice_settings: {
+              stability:        0.38,  // más variado = suena más natural y juvenil
+              similarity_boost: 0.80,
+              style:            0.45,  // expresividad alta
+              use_speaker_boost: true,
+            },
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("ElevenLabs error " + res.status);
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      if (audioRef.current) { audioRef.current.pause(); URL.revokeObjectURL(audioRef.current.src); }
+      audioRef.current = new Audio(url);
+      audioRef.current.play();
+    } catch (err) {
+      console.warn("[TTS] ElevenLabs falló, usando Web Speech:", err.message);
+      speakWebSpeech(text);
+    }
+  }
+
+  // Fallback: Web Speech API (voz del sistema)
+  function speakWebSpeech(text) {
+    const ss = window.speechSynthesis;
+    if (!ss) return;
+
+    const utt = new SpeechSynthesisUtterance(text);
+    const all = voicesRef.current;
+    const esVoices = all.filter(v => v.lang.startsWith("es"));
+    const voz = esVoices.find(v => /sabina|helena|mónica|monica|paulina|laura|luciana|camila|valentina/i.test(v.name))
+             || esVoices.find(v => /co|mx|us/i.test(v.lang.split("-")[1] || ""))
+             || esVoices[0];
+    if (voz) utt.voice = voz;
+    utt.lang   = "es-CO";
+    utt.pitch  = 1.7;
+    utt.rate   = 1.18;
+    utt.volume = 1;
+
+    // Chrome bug: cancel() seguido inmediatamente de speak() causa delay.
+    // Cancelar solo si está activo y dar 80ms para que el motor resetee.
+    if (ss.speaking || ss.pending) {
+      ss.cancel();
+      setTimeout(() => ss.speak(utt), 80);
+    } else {
+      ss.speak(utt);
+    }
+  }
+
+  function speak(text) {
+    const clean = limpiarTexto(text);
+    if (!clean) return;
+    // Detener audio previo de ElevenLabs si existe
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    if (ELEVEN_KEY) speakElevenLabs(clean);
+    else            speakWebSpeech(clean);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   const avatarState = paso === "procesando" ? "procesando"
     : hablandoActive     ? "hablando"
@@ -196,6 +288,68 @@ export default function Chat() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [mensajes]);
   useEffect(() => { if (paso && paso !== "procesando") inputRef.current?.focus(); }, [paso, mensajes]);
+
+  // ── Globos de texto ──────────────────────────────────────────────────────────
+
+  function showBubble(text, ms = 3500) {
+    if (bubbleTimerRef.current) clearTimeout(bubbleTimerRef.current);
+    setBubble(b => ({ text, show: true, key: b.key + 1 }));
+    speak(text);
+    bubbleTimerRef.current = setTimeout(
+      () => setBubble(b => ({ ...b, show: false })),
+      ms
+    );
+  }
+
+  // Saludo al montar (solo una vez)
+  useEffect(() => {
+    const nombre = usuario?.nombre?.split(" ")[0];
+    setTimeout(() => showBubble(nombre ? `¡Hola de nuevo, ${nombre}! 😊` : "¡Hola! Soy ValerIA 👋", 4000), 900);
+  }, []);
+
+  // Burbujas por transición de paso
+  useEffect(() => {
+    if (pasoInitRef.current) { pasoInitRef.current = false; return; }
+
+    if (paso === "procesando") {
+      showBubble("Analizando tu caso...", 60000);
+      return;
+    }
+
+    // Ocultar burbuja al salir de procesando
+    if (bubbleTimerRef.current) clearTimeout(bubbleTimerRef.current);
+    setBubble(b => ({ ...b, show: false }));
+
+    const MSGS = {
+      nombre:   "¿Cuál es tu nombre? 👤",
+      cedula:   "¿Tu número de cédula? 🪪",
+      email:    "¿Tu correo electrónico? 📧",
+      caso:     "Escribe tu caso en el chat 📝",
+      listo:    "¡Mira el chat, hay novedades! 💬",
+      followup: "¿Tienes dudas? Escríbeme 💬",
+    };
+    if (MSGS[paso]) setTimeout(() => showBubble(MSGS[paso], 4000), 500);
+  }, [paso]);
+
+  // Burbuja cuando el bot responde (fuera de procesando)
+  useEffect(() => {
+    if (!mensajes) return;
+    const botMsgs = mensajes.filter(m => m.de === "bot");
+    const n = botMsgs.length;
+    if (n <= prevBotBubble.current) { prevBotBubble.current = n; return; }
+    prevBotBubble.current = n;
+
+    if (paso === "procesando") return; // la burbuja de procesando ya está activa
+
+    const ultimo = botMsgs[botMsgs.length - 1]?.texto || "";
+
+    // Solo mostrar cuando el bot da una respuesta sobre el caso radicado
+    if (paso === "listo" || (paso === "followup" && /código|código|prioridad|área|plazo|proceso/i.test(ultimo))) {
+      setTimeout(() => showBubble("¡Revisa la respuesta en el chat! 👇", 4500), 800);
+    }
+  }, [mensajes]);
+
+  // ─────────────────────────────────────────────────────────────────────────────
 
   function msg(de, texto) { return { de, texto, hora: hora() }; }
   function push(...nuevos) { setMensajes(p => [...p, ...nuevos]); }
@@ -347,17 +501,34 @@ export default function Chat() {
 
           <AvatarIA state={avatarState} />
 
+          {/* Globo de texto */}
+          <div className={styles.bubbleWrap}>
+            {bubble.show && (
+              <div key={bubble.key} className={styles.speechBubble}>
+                {bubble.text}
+              </div>
+            )}
+          </div>
+
           <div className={styles.avatarInfo}>
-            <p className={styles.avatarName}>Asistente PQR</p>
+            <p className={styles.avatarName}>ValerIA</p>
             <div className={styles.avatarStatusRow}>
               <span className={`${styles.statusDot} ${styles[`dot_${avatarState}`] || ""}`} />
               <span className={styles.statusTxt}>
                 {avatarState === "idle"        ? "En línea"
                 : avatarState === "escuchando" ? "Escuchando..."
                 : avatarState === "procesando" ? "Procesando..."
-                :                               "Respondiendo..."}
+                :                               "En línea"}
               </span>
             </div>
+
+            {/* Indicador "Respondiendo" visible cuando habla */}
+            {avatarState === "hablando" && (
+              <div className={styles.respondingBadge}>
+                <span>Respondiendo</span>
+                <span className={styles.wave}><i/><i/><i/><i/></span>
+              </div>
+            )}
           </div>
 
           <div className={styles.channelRow}>
