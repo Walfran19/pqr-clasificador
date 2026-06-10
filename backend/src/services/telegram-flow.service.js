@@ -8,6 +8,20 @@ const { transcribirAudio }          = require("./transcription.service");
 const PLAZOS = { Alta: "24 horas", Media: "3 días hábiles", Baja: "5 días hábiles" };
 const INACTIVIDAD_HORAS = 24;
 
+// ─── Menú principal ───────────────────────────────────────────────────────────
+
+const MENU_OPCIONES = [
+  "¿Qué deseas hacer?",
+  "",
+  "1️⃣ *Nueva PQR* — Radicar una petición, queja o reclamo",
+  "2️⃣ *Consultar PQR* — Ver tus casos ya radicados",
+  "",
+  "Responde con *1* o *2*."
+].join("\n");
+
+const VOLVER_MENU = "0️⃣ Escribe *0* para volver al menú.";
+const RE_MENU     = /^men[uú]$/i;
+
 // ─── DB helpers ──────────────────────────────────────────────────────────────
 
 function getConv(chatId) {
@@ -102,10 +116,10 @@ async function procesarMensajeTG(chatId, texto) {
 
   // Usuario completamente nuevo: iniciar con cualquier mensaje
   if (!conv) {
-    saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
       "👋 ¡Bienvenido al sistema de *PQR* de la institución educativa!",
-      "📋 Para registrar tu caso necesito algunos datos. ¿Cuál es tu *nombre completo*?"
+      MENU_OPCIONES
     );
     return;
   }
@@ -117,12 +131,19 @@ async function procesarMensajeTG(chatId, texto) {
     return;
   }
 
-  // Usuario que vuelve después de inactividad → pedir datos frescos
+  // Volver al menú principal en cualquier momento
+  if (RE_MENU.test(txt) && conv.paso !== "procesando") {
+    saveConv(chatId, { paso: "menu" });
+    await responder(chatId, MENU_OPCIONES);
+    return;
+  }
+
+  // Usuario que vuelve después de inactividad → mostrar menú de nuevo
   if (estaInactivo(conv) && conv.paso !== "procesando") {
-    saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
-      "👋 ¡Bienvenido de nuevo! Para radicar un nuevo caso necesito tus datos.",
-      "¿Cuál es tu *nombre completo*?"
+      "👋 ¡Bienvenido de nuevo!",
+      MENU_OPCIONES
     );
     return;
   }
@@ -130,6 +151,94 @@ async function procesarMensajeTG(chatId, texto) {
   const paso = conv.paso;
 
   // ── Pasos del flujo ────────────────────────────────────────────────────────
+
+  if (paso === "menu") {
+    if (txt === "1") {
+      saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await responder(chatId, "📋 Perfecto, vamos a radicar tu PQR. ¿Cuál es tu *nombre completo*?");
+      return;
+    }
+    if (txt === "2") {
+      saveConv(chatId, { paso: "consultar_cedula" });
+      await responder(chatId,
+        "🪪 Escribe tu *número de cédula* para ver tus casos registrados.",
+        VOLVER_MENU
+      );
+      return;
+    }
+    await responder(chatId, "🤔 No entendí tu respuesta. Responde con *1* o *2*.\n\n" + MENU_OPCIONES);
+    return;
+  }
+
+  if (paso === "consultar_cedula") {
+    if (txt === "0") {
+      saveConv(chatId, { paso: "menu" });
+      await responder(chatId, MENU_OPCIONES);
+      return;
+    }
+
+    const cedula = txt.replace(/\s/g, "");
+    if (!/^\d{5,12}$/.test(cedula)) {
+      await responder(chatId, `❌ Ingresa un número de cédula válido (solo números, entre 5 y 12 dígitos).\n\n${VOLVER_MENU}`);
+      return;
+    }
+
+    const casos = db.prepare(
+      "SELECT codigo, categoria, estado, fecha FROM pqr WHERE cedula = ? ORDER BY fecha DESC LIMIT 9"
+    ).all(cedula);
+
+    if (casos.length === 0) {
+      await responder(chatId, `❌ No encontré ningún caso registrado con la cédula *${cedula}*.\n\nIntenta con otra cédula, o ${VOLVER_MENU.toLowerCase()}`);
+      return;
+    }
+
+    const NUMS = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣"];
+    const lista = casos.map((c, i) =>
+      `${NUMS[i]} *${c.codigo}* — ${c.categoria} (${c.estado}) — ${(c.fecha || "").slice(0, 10)}`
+    ).join("\n");
+
+    saveConv(chatId, {
+      paso: "consultar_lista",
+      ultima_clasificacion: JSON.stringify(casos.map(c => c.codigo)),
+    });
+
+    await responder(chatId,
+      `📋 Encontré *${casos.length}* caso(s) con la cédula *${cedula}*:\n\n${lista}`,
+      `Escribe el número del caso que deseas ver.\n\n${VOLVER_MENU}`
+    );
+    return;
+  }
+
+  if (paso === "consultar_lista") {
+    if (txt === "0") {
+      saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
+      await responder(chatId, MENU_OPCIONES);
+      return;
+    }
+
+    let codigos = [];
+    try { codigos = JSON.parse(conv.ultima_clasificacion || "[]"); } catch {}
+
+    const idx = parseInt(txt, 10);
+    if (!Number.isInteger(idx) || idx < 1 || idx > codigos.length) {
+      await responder(chatId, `❌ Elige un número entre *1* y *${codigos.length}*.\n\n${VOLVER_MENU}`);
+      return;
+    }
+
+    const codigo = codigos[idx - 1];
+    const pqr = db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+
+    if (pqr) {
+      const resp = pqr.respuesta ? `\n\n💬 *Respuesta:*\n${pqr.respuesta}` : "";
+      await responder(chatId, `📋 *Estado del caso ${codigo}*\n\n📌 Estado: *${pqr.estado}*\n🏷️ Tipo: ${pqr.tipo} — ${pqr.categoria}\n⚡ Prioridad: ${pqr.prioridad}${resp}`);
+    } else {
+      await responder(chatId, `❌ No encontré información del caso *${codigo}*.`);
+    }
+
+    saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
+    await responder(chatId, MENU_OPCIONES);
+    return;
+  }
 
   if (paso === "nombre") {
     if (txt.length < 3) {
@@ -266,9 +375,9 @@ async function procesarMensajeTG(chatId, texto) {
     return;
   }
 
-  // Estado desconocido — reiniciar
-  saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null });
-  await responder(chatId, "👋 ¡Hola! Soy el asistente de PQR.\n\n¿Cuál es tu nombre completo?");
+  // Estado desconocido — volver al menú
+  saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null });
+  await responder(chatId, "👋 ¡Hola! Soy el asistente de PQR.\n\n" + MENU_OPCIONES);
 }
 
 // ─── Manejador unificado (texto + audio) ──────────────────────────────────────
