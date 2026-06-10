@@ -1,8 +1,11 @@
 const Database = require("better-sqlite3");
 const path = require("path");
+const fs = require("fs");
 const bcrypt = require("bcryptjs");
 
-const db = new Database(path.join(__dirname, "../../database.db"));
+const dbPath = process.env.DB_PATH || path.join(__dirname, "../../database.db");
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+const db = new Database(dbPath);
 
 function inicializar() {
   // Tabla principal de PQR

@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: pqr-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_PATH: /app/data/database.db
+    ports:
+      - "3001:3001"
+    volumes:
+      - db-data:/app/data
+      - wa-auth-data:/app/wa-auth
+    networks:
+      - pqr-net
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    container_name: pqr-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - pqr-net
+
+volumes:
+  db-data:
+  wa-auth-data:
+
+networks:
+  pqr-net:
+    driver: bridge
