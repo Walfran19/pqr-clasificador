@@ -19,7 +19,7 @@ Provisiona toda la infraestructura para desplegar el sistema PQR en AWS:
 ## 1. Configurar variables
 
 ```powershell
-cd terraform
+cd Terraform
 copy terraform.tfvars.example terraform.tfvars
 ```
 
@@ -72,7 +72,7 @@ cd ..\frontend
 $env:VITE_API_URL = "/api"
 npm run build
 
-aws s3 sync dist/ "s3://$(terraform -chdir=..\terraform output -raw frontend_bucket_name)" --delete
+aws s3 sync dist/ "s3://$(terraform -chdir=..\Terraform output -raw frontend_bucket_name)" --delete
 
 # Invalidar la caché de CloudFront para ver los cambios al instante
 $DIST_ID = aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='pqr-clasificador frontend'].Id | [0]" --output text
