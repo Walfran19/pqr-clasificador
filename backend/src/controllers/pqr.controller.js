@@ -22,7 +22,7 @@ async function radicar(req, res) {
     const codigo = generarCodigo();
     const usuario_id = req.usuario?.id || null;
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO pqr (codigo, texto, nombre, cedula, email, tipo, categoria, prioridad, sentimiento, area, resumen, respuesta, confianza, usuario_id)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -50,9 +50,9 @@ async function radicar(req, res) {
 }
 
 // GET /api/pqr/:codigo — consultar por código
-function consultar(req, res) {
+async function consultar(req, res) {
   const { codigo } = req.params;
-  const pqr = db.prepare("SELECT * FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  const pqr = await db.prepare("SELECT * FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
 
   if (!pqr) {
     return res.status(404).json({ ok: false, error: "No se encontró una PQR con ese código." });
@@ -62,7 +62,7 @@ function consultar(req, res) {
 }
 
 // GET /api/pqr/admin/listar — listar con filtros y paginación (admin)
-function listar(req, res) {
+async function listar(req, res) {
   const { estado, categoria, prioridad } = req.query;
   const page  = Math.max(1, parseInt(req.query.page)  || 1);
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
@@ -77,14 +77,14 @@ function listar(req, res) {
 
   const orden = " ORDER BY CASE prioridad WHEN 'Alta' THEN 1 WHEN 'Media' THEN 2 ELSE 3 END, fecha DESC";
 
-  const total = db.prepare(`SELECT COUNT(*) as n FROM pqr ${condicion}`).get(...params).n;
-  const pqrs  = db.prepare(`SELECT * FROM pqr ${condicion}${orden} LIMIT ? OFFSET ?`).all(...params, limit, offset);
+  const total = (await db.prepare(`SELECT COUNT(*) as n FROM pqr ${condicion}`).get(...params)).n;
+  const pqrs  = await db.prepare(`SELECT * FROM pqr ${condicion}${orden} LIMIT ? OFFSET ?`).all(...params, limit, offset);
 
   res.json({ ok: true, pqrs, total, page, limit, totalPages: Math.ceil(total / limit) });
 }
 
 // PUT /api/pqr/:codigo/estado — cambiar estado (admin)
-function cambiarEstado(req, res) {
+async function cambiarEstado(req, res) {
   const { codigo } = req.params;
   const { estado } = req.body;
 
@@ -93,12 +93,12 @@ function cambiarEstado(req, res) {
     return res.status(400).json({ ok: false, error: "Estado inválido." });
   }
 
-  const pqr = db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  const pqr = await db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
   if (!pqr) {
     return res.status(404).json({ ok: false, error: "PQR no encontrada." });
   }
 
-  db.prepare("UPDATE pqr SET estado = ? WHERE codigo = ?").run(estado, codigo.toUpperCase());
+  await db.prepare("UPDATE pqr SET estado = ? WHERE codigo = ?").run(estado, codigo.toUpperCase());
 
   res.json({ ok: true, mensaje: `Estado actualizado a '${estado}'.` });
 
@@ -109,22 +109,22 @@ function cambiarEstado(req, res) {
 }
 
 // GET /api/pqr/admin/stats — métricas para dashboard
-function stats(req, res) {
-  const total        = db.prepare("SELECT COUNT(*) as n FROM pqr").get().n;
-  const porEstado    = db.prepare("SELECT estado, COUNT(*) as n FROM pqr GROUP BY estado").all();
-  const porCategoria = db.prepare("SELECT categoria, COUNT(*) as n FROM pqr GROUP BY categoria").all();
-  const porPrioridad = db.prepare("SELECT prioridad, COUNT(*) as n FROM pqr GROUP BY prioridad").all();
-  const porDia       = db.prepare(`
-    SELECT DATE(fecha) as dia, COUNT(*) as n
+async function stats(req, res) {
+  const total        = (await db.prepare("SELECT COUNT(*) as n FROM pqr").get()).n;
+  const porEstado    = await db.prepare("SELECT estado, COUNT(*) as n FROM pqr GROUP BY estado").all();
+  const porCategoria = await db.prepare("SELECT categoria, COUNT(*) as n FROM pqr GROUP BY categoria").all();
+  const porPrioridad = await db.prepare("SELECT prioridad, COUNT(*) as n FROM pqr GROUP BY prioridad").all();
+  const porDia       = await db.prepare(`
+    SELECT LEFT(fecha, 10) as dia, COUNT(*) as n
     FROM pqr
-    WHERE fecha >= datetime('now', '-29 days')
-    GROUP BY DATE(fecha)
+    WHERE fecha >= TO_CHAR(NOW() - INTERVAL '29 days', 'YYYY-MM-DD HH24:MI:SS')
+    GROUP BY LEFT(fecha, 10)
     ORDER BY dia
   `).all();
-  const sinRespuesta = db.prepare(
+  const sinRespuesta = (await db.prepare(
     "SELECT COUNT(*) as n FROM pqr WHERE respuesta_aprobada = 0 OR respuesta_aprobada IS NULL"
-  ).get().n;
-  const recientes = db.prepare(
+  ).get()).n;
+  const recientes = await db.prepare(
     "SELECT codigo, nombre, categoria, prioridad, estado, fecha FROM pqr ORDER BY fecha DESC LIMIT 6"
   ).all();
 
@@ -132,9 +132,9 @@ function stats(req, res) {
 }
 
 // GET /api/pqr/cedula/:cedula — consultar todos los casos de una cédula
-function consultarPorCedula(req, res) {
+async function consultarPorCedula(req, res) {
   const { cedula } = req.params;
-  const pqrs = db.prepare(
+  const pqrs = await db.prepare(
     "SELECT * FROM pqr WHERE cedula = ? ORDER BY fecha DESC"
   ).all(cedula.trim());
 
@@ -146,9 +146,9 @@ function consultarPorCedula(req, res) {
 }
 
 // GET /api/pqr/email/:email — verificar si un correo tiene casos registrados
-function consultarPorEmail(req, res) {
+async function consultarPorEmail(req, res) {
   const email = req.params.email.trim().toLowerCase();
-  const pqrs = db.prepare(
+  const pqrs = await db.prepare(
     "SELECT codigo, tipo, categoria, estado, fecha FROM pqr WHERE LOWER(email) = ? ORDER BY fecha DESC LIMIT 5"
   ).all(email);
 
@@ -156,15 +156,15 @@ function consultarPorEmail(req, res) {
 }
 
 // GET /api/pqr/user/historial — historial del usuario autenticado
-function historial(req, res) {
-  const pqrs = db.prepare(
+async function historial(req, res) {
+  const pqrs = await db.prepare(
     "SELECT * FROM pqr WHERE usuario_id = ? ORDER BY fecha DESC"
   ).all(req.usuario.id);
   res.json({ ok: true, pqrs, total: pqrs.length });
 }
 
 // PUT /api/pqr/:codigo/respuesta — admin escribe o edita la respuesta
-function actualizarRespuesta(req, res) {
+async function actualizarRespuesta(req, res) {
   const { codigo } = req.params;
   const { respuesta } = req.body;
 
@@ -172,12 +172,12 @@ function actualizarRespuesta(req, res) {
     return res.status(400).json({ ok: false, error: "La respuesta no puede estar vacía." });
   }
 
-  const pqr = db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  const pqr = await db.prepare("SELECT nombre, email FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
   if (!pqr) {
     return res.status(404).json({ ok: false, error: "PQR no encontrada." });
   }
 
-  db.prepare(
+  await db.prepare(
     "UPDATE pqr SET respuesta = ?, respuesta_aprobada = 1 WHERE codigo = ?"
   ).run(respuesta.trim(), codigo.toUpperCase());
 
@@ -190,15 +190,15 @@ function actualizarRespuesta(req, res) {
 }
 
 // PUT /api/pqr/:codigo/aprobar — admin aprueba la respuesta generada por IA
-function aprobarRespuesta(req, res) {
+async function aprobarRespuesta(req, res) {
   const { codigo } = req.params;
 
-  const pqr = db.prepare("SELECT nombre, email, respuesta FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
+  const pqr = await db.prepare("SELECT nombre, email, respuesta FROM pqr WHERE codigo = ?").get(codigo.toUpperCase());
   if (!pqr) {
     return res.status(404).json({ ok: false, error: "PQR no encontrada." });
   }
 
-  db.prepare("UPDATE pqr SET respuesta_aprobada = 1 WHERE codigo = ?").run(codigo.toUpperCase());
+  await db.prepare("UPDATE pqr SET respuesta_aprobada = 1 WHERE codigo = ?").run(codigo.toUpperCase());
 
   res.json({ ok: true, mensaje: "Respuesta de la IA aprobada." });
 

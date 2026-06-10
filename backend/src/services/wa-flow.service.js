@@ -7,6 +7,7 @@ const { transcribirAudio }          = require("./transcription.service");
 
 const PLAZOS = { Alta: "24 horas", Media: "3 días hábiles", Baja: "5 días hábiles" };
 const INACTIVIDAD_HORAS = 24;
+const NOW_BOGOTA = "TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'YYYY-MM-DD HH24:MI:SS')";
 
 // ─── Menú principal ───────────────────────────────────────────────────────────
 
@@ -28,15 +29,15 @@ function getConv(phone) {
   return db.prepare("SELECT * FROM conversaciones_wa WHERE phone = ?").get(phone);
 }
 
-function saveConv(phone, campos) {
-  const existe = db.prepare("SELECT phone FROM conversaciones_wa WHERE phone = ?").get(phone);
+async function saveConv(phone, campos) {
+  const existe = await db.prepare("SELECT phone FROM conversaciones_wa WHERE phone = ?").get(phone);
   if (existe) {
     const keys = Object.keys(campos);
     const sets = keys.map(k => `${k} = ?`).join(", ");
-    db.prepare(`UPDATE conversaciones_wa SET ${sets}, updated_at = CURRENT_TIMESTAMP WHERE phone = ?`)
+    await db.prepare(`UPDATE conversaciones_wa SET ${sets}, updated_at = ${NOW_BOGOTA} WHERE phone = ?`)
       .run(...keys.map(k => campos[k]), phone);
   } else {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO conversaciones_wa (phone, paso, nombre, cedula, email, ultimo_codigo, ultima_clasificacion)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -68,7 +69,7 @@ function estaInactivo(conv) {
 
 // ─── Lógica de followup (espejo del frontend) ────────────────────────────────
 
-function respuestaFollowup(txt, clasificacion, codigo) {
+async function respuestaFollowup(txt, clasificacion, codigo) {
   const t = txt.toLowerCase();
 
   if (/nuevo\s*caso|otro\s*caso|otra\s*queja|radicar/i.test(t))
@@ -84,7 +85,7 @@ function respuestaFollowup(txt, clasificacion, codigo) {
     return `📌 Tu código es *${codigo}*. Escribe *CONSULTAR ${codigo}* para ver el estado.`;
 
   if (/estado|cómo va|como va|novedad/i.test(t)) {
-    const pqr = db.prepare("SELECT estado, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, respuesta FROM pqr WHERE codigo = ?").get(codigo);
     if (pqr) return `📋 Estado de *${codigo}*: *${pqr.estado}*${pqr.respuesta ? "\n\n💬 Respuesta:\n" + pqr.respuesta : ""}`;
   }
 
@@ -102,7 +103,7 @@ async function procesarMensaje(phone, texto) {
   const matchConsulta = txt.match(/^consultar\s+(PQR-\d{4}-\d{4})$/i);
   if (matchConsulta) {
     const codigo = matchConsulta[1].toUpperCase();
-    const pqr = db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
     if (pqr) {
       const resp = pqr.respuesta ? `\n\n💬 *Respuesta:*\n${pqr.respuesta}` : "";
       await responder(phone, `📋 *Estado del caso ${codigo}*\n\n📌 Estado: *${pqr.estado}*\n🏷️ Tipo: ${pqr.tipo} — ${pqr.categoria}\n⚡ Prioridad: ${pqr.prioridad}${resp}`);
@@ -112,13 +113,13 @@ async function procesarMensaje(phone, texto) {
     return;
   }
 
-  let conv = getConv(phone);
+  let conv = await getConv(phone);
 
   // Usuario completamente nuevo: solo responde al trigger exacto
   if (!conv) {
     const TRIGGER = /^hola,?\s+vengo\s+a\s+dejar\s+una\s+pqr\.?$/i;
     if (!TRIGGER.test(txt)) return;
-    saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(phone,
       "👋 ¡Hola! Soy *Valeria*, tu asistente virtual del sistema de *PQR* de la institución educativa.",
       MENU_OPCIONES
@@ -128,21 +129,21 @@ async function procesarMensaje(phone, texto) {
 
   // Reiniciar — borrar conversación para exigir el trigger de nuevo
   if (/^(reiniciar|reset|cancelar)$/i.test(txt)) {
-    db.prepare("DELETE FROM conversaciones_wa WHERE phone = ?").run(phone);
+    await db.prepare("DELETE FROM conversaciones_wa WHERE phone = ?").run(phone);
     await responder(phone, 'Conversación reiniciada. Cuando quieras comenzar escribe:\n\n*Hola, vengo a dejar una PQR*');
     return;
   }
 
   // Volver al menú principal en cualquier momento
   if (RE_MENU.test(txt) && conv.paso !== "procesando") {
-    saveConv(phone, { paso: "menu" });
+    await saveConv(phone, { paso: "menu" });
     await responder(phone, MENU_OPCIONES);
     return;
   }
 
   // Usuario que vuelve después de inactividad → mostrar menú de nuevo
   if (estaInactivo(conv) && conv.paso !== "procesando") {
-    saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(phone,
       "👋 ¡Hola de nuevo! Soy *Valeria*, ¿en qué puedo ayudarte hoy?",
       MENU_OPCIONES
@@ -156,12 +157,12 @@ async function procesarMensaje(phone, texto) {
 
   if (paso === "menu") {
     if (txt === "1") {
-      saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
       await responder(phone, "📋 Perfecto, vamos a radicar tu PQR. ¿Cuál es tu *nombre completo*?");
       return;
     }
     if (txt === "2") {
-      saveConv(phone, { paso: "consultar_cedula" });
+      await saveConv(phone, { paso: "consultar_cedula" });
       await responder(phone,
         "🪪 Escribe tu *número de cédula* para ver tus casos registrados.",
         VOLVER_MENU
@@ -174,7 +175,7 @@ async function procesarMensaje(phone, texto) {
 
   if (paso === "consultar_cedula") {
     if (txt === "0") {
-      saveConv(phone, { paso: "menu" });
+      await saveConv(phone, { paso: "menu" });
       await responder(phone, MENU_OPCIONES);
       return;
     }
@@ -185,7 +186,7 @@ async function procesarMensaje(phone, texto) {
       return;
     }
 
-    const casos = db.prepare(
+    const casos = await db.prepare(
       "SELECT codigo, categoria, estado, fecha FROM pqr WHERE cedula = ? ORDER BY fecha DESC LIMIT 9"
     ).all(cedula);
 
@@ -199,7 +200,7 @@ async function procesarMensaje(phone, texto) {
       `${NUMS[i]} *${c.codigo}* — ${c.categoria} (${c.estado}) — ${(c.fecha || "").slice(0, 10)}`
     ).join("\n");
 
-    saveConv(phone, {
+    await saveConv(phone, {
       paso: "consultar_lista",
       ultima_clasificacion: JSON.stringify(casos.map(c => c.codigo)),
     });
@@ -213,7 +214,7 @@ async function procesarMensaje(phone, texto) {
 
   if (paso === "consultar_lista") {
     if (txt === "0") {
-      saveConv(phone, { paso: "menu", ultima_clasificacion: null });
+      await saveConv(phone, { paso: "menu", ultima_clasificacion: null });
       await responder(phone, MENU_OPCIONES);
       return;
     }
@@ -228,7 +229,7 @@ async function procesarMensaje(phone, texto) {
     }
 
     const codigo = codigos[idx - 1];
-    const pqr = db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
 
     if (pqr) {
       const resp = pqr.respuesta ? `\n\n💬 *Respuesta:*\n${pqr.respuesta}` : "";
@@ -237,7 +238,7 @@ async function procesarMensaje(phone, texto) {
       await responder(phone, `❌ No encontré información del caso *${codigo}*.`);
     }
 
-    saveConv(phone, { paso: "menu", ultima_clasificacion: null });
+    await saveConv(phone, { paso: "menu", ultima_clasificacion: null });
     await responder(phone, MENU_OPCIONES);
     return;
   }
@@ -247,7 +248,7 @@ async function procesarMensaje(phone, texto) {
       await responder(phone, "⚠️ Por favor ingresa tu nombre completo.");
       return;
     }
-    saveConv(phone, { paso: "cedula", nombre: txt });
+    await saveConv(phone, { paso: "cedula", nombre: txt });
     await responder(phone,
       `Gracias, *${txt}*. 👋`,
       "🪪 Ahora ingresa tu *número de cédula* (solo números)."
@@ -260,7 +261,7 @@ async function procesarMensaje(phone, texto) {
       await responder(phone, "❌ Ingresa un número de cédula válido (solo números, entre 5 y 12 dígitos).");
       return;
     }
-    saveConv(phone, { paso: "email", cedula: txt.replace(/\s/g, "") });
+    await saveConv(phone, { paso: "email", cedula: txt.replace(/\s/g, "") });
     await responder(phone,
       "✅ Cédula registrada.",
       "📧 ¿Cuál es tu *correo electrónico*? Te notificaremos cuando haya novedades."
@@ -274,9 +275,9 @@ async function procesarMensaje(phone, texto) {
       return;
     }
     const emailLower = txt.toLowerCase();
-    saveConv(phone, { paso: "caso", email: emailLower });
+    await saveConv(phone, { paso: "caso", email: emailLower });
 
-    const existentes = db.prepare(
+    const existentes = await db.prepare(
       "SELECT codigo, estado FROM pqr WHERE LOWER(email) = ? ORDER BY fecha DESC LIMIT 5"
     ).all(emailLower);
 
@@ -309,14 +310,14 @@ async function procesarMensaje(phone, texto) {
       return;
     }
 
-    saveConv(phone, { paso: "procesando" });
+    await saveConv(phone, { paso: "procesando" });
     await responder(phone, "⏳ Evaluando su caso... espere un momento.");
 
     try {
       const clasificacion = await clasificarPQR(txt);
       const codigo        = generarCodigo();
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO pqr (codigo, texto, nombre, cedula, email, tipo, categoria, prioridad, sentimiento, area, resumen, respuesta, confianza)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
@@ -326,7 +327,7 @@ async function procesarMensaje(phone, texto) {
         clasificacion.resumen, clasificacion.respuesta || null, clasificacion.confianza
       );
 
-      saveConv(phone, {
+      await saveConv(phone, {
         paso: "followup",
         ultimo_codigo: codigo,
         ultima_clasificacion: JSON.stringify(clasificacion),
@@ -353,7 +354,7 @@ async function procesarMensaje(phone, texto) {
 
     } catch (err) {
       console.error("[WA Flow] Error clasificando:", err.message);
-      saveConv(phone, { paso: "caso" });
+      await saveConv(phone, { paso: "caso" });
       await responder(phone, "❌ Ocurrió un error al procesar tu caso. Por favor intenta de nuevo.");
     }
     return;
@@ -364,9 +365,9 @@ async function procesarMensaje(phone, texto) {
     try { clasificacion = JSON.parse(conv.ultima_clasificacion || "{}"); } catch {}
     const codigo = conv.ultimo_codigo;
 
-    const respuesta = respuestaFollowup(txt, clasificacion, codigo);
+    const respuesta = await respuestaFollowup(txt, clasificacion, codigo);
     if (respuesta === null) {
-      saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await saveConv(phone, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
       await responder(phone,
         "📝 Claro, vamos a radicar un nuevo caso.",
         "¿Cuál es tu *nombre completo*?"
@@ -378,7 +379,7 @@ async function procesarMensaje(phone, texto) {
   }
 
   // Estado desconocido — volver al menú
-  saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null });
+  await saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null });
   await responder(phone, "👋 ¡Hola! Soy *Valeria*, el asistente de PQR.\n\n" + MENU_OPCIONES);
 }
 
@@ -414,7 +415,7 @@ async function manejarMensajeWA(msg) {
 // ─── Notificaciones desde el panel admin ─────────────────────────────────────
 
 async function notificarCambioEstado(email, codigo, estado) {
-  const conv = db.prepare("SELECT phone FROM conversaciones_wa WHERE LOWER(email) = ?").get(email.toLowerCase());
+  const conv = await db.prepare("SELECT phone FROM conversaciones_wa WHERE LOWER(email) = ?").get(email.toLowerCase());
   if (!conv) return;
   const mensajes = {
     "En proceso": `📋 Tu caso *${codigo}* está ahora *En proceso*. Un funcionario está revisando tu solicitud.`,
@@ -425,7 +426,7 @@ async function notificarCambioEstado(email, codigo, estado) {
 }
 
 async function notificarRespuesta(email, codigo, respuesta) {
-  const conv = db.prepare("SELECT phone FROM conversaciones_wa WHERE LOWER(email) = ?").get(email.toLowerCase());
+  const conv = await db.prepare("SELECT phone FROM conversaciones_wa WHERE LOWER(email) = ?").get(email.toLowerCase());
   if (!conv) return;
   await enviarMensaje(conv.phone, `💬 *Respuesta oficial para tu caso ${codigo}:*\n\n${respuesta}`).catch(() => {});
 }

@@ -6,7 +6,7 @@ Esta guía explica cómo levantar todo el sistema (frontend, backend y base de d
 
 ```
 pqr-clasificador/
-├── docker-compose.yml        # Orquesta los 3 servicios
+├── docker-compose.yml        # Orquesta los 4 servicios
 ├── backend/
 │   ├── Dockerfile
 │   ├── .dockerignore
@@ -17,9 +17,9 @@ pqr-clasificador/
     └── .dockerignore
 ```
 
-- **backend**: Node 22 + Express + better-sqlite3, expone el puerto `3001`.
+- **backend**: Node 22 + Express + PostgreSQL (vía `pg`), expone el puerto `3001`.
 - **frontend**: build de Vite servido por Nginx en el puerto `80`. Nginx hace de proxy de `/api/*` hacia el backend, así el frontend no necesita conocer la URL del backend.
-- **base de datos**: SQLite, persistida en un volumen Docker (`db-data`), no requiere contenedor propio.
+- **postgres**: PostgreSQL 16, persistido en un volumen Docker (`pg-data`). El backend se conecta usando la variable `DATABASE_URL` (ya configurada en `docker-compose.yml` para apuntar a este servicio).
 
 ---
 
@@ -76,7 +76,7 @@ Desde la raíz del proyecto (donde está `docker-compose.yml`):
 docker compose build
 ```
 
-La primera vez tarda varios minutos (compila `better-sqlite3` y hace el build de Vite).
+La primera vez tarda varios minutos (descarga la imagen de Postgres y hace el build de Vite).
 
 ## 5. Levantar los servicios
 
@@ -85,9 +85,12 @@ docker compose up -d
 ```
 
 Esto crea:
+- `pqr-postgres` → base de datos PostgreSQL (puerto 5432, solo interno)
 - `pqr-backend` → `http://localhost:3001`
 - `pqr-frontend` → `http://localhost` (puerto 80)
-- Volúmenes `db-data` (SQLite) y `wa-auth-data` (sesión de WhatsApp)
+- Volúmenes `pg-data` (PostgreSQL) y `wa-auth-data` (sesión de WhatsApp)
+
+> La primera vez que arranca, el backend crea las tablas automáticamente y muestra en los logs (`docker compose logs -f backend`) el email/contraseña del administrador inicial (o usa los que definiste en `ADMIN_EMAIL`/`ADMIN_PASSWORD`).
 
 ## 6. Vincular WhatsApp (si `WHATSAPP_ENABLED` no es `false`)
 
@@ -125,22 +128,23 @@ docker compose down -v
 
 ## Migrar datos existentes (opcional)
 
-Si ya tienes una `backend/database.db` o una sesión `backend/wa-auth/` con datos que quieras conservar, cópialos dentro del volumen antes o después del primer arranque:
+Si ya tienes una sesión `backend/wa-auth/` con datos que quieras conservar, cópiala dentro del volumen antes o después del primer arranque:
 
 ```powershell
 # Con los contenedores corriendo:
-docker cp backend\database.db pqr-backend:/app/data/database.db
 docker cp backend\wa-auth\.   pqr-backend:/app/wa-auth
 docker compose restart backend
 ```
+
+Si vienes de una versión anterior con SQLite (`backend/database.db`) y quieres conservar los datos, exporta las tablas a SQL e impórtalas en Postgres, por ejemplo con [`pgloader`](https://pgloader.io/) o un script manual de migración.
 
 ---
 
 ## Próximos pasos (AWS / Terraform)
 
-Cuando quieras pasar esto a AWS, ten en cuenta dos puntos importantes que afectan la arquitectura:
+El sistema ya está preparado para AWS:
 
-1. **SQLite no es ideal para Lambda**: el filesystem de Lambda es efímero y no soporta escrituras concurrentes seguras. Para un despliegue serverless real conviene migrar a **RDS (PostgreSQL)** o **Aurora Serverless**.
-2. **Los bots de WhatsApp (Baileys) y Telegram mantienen una conexión persistente** (socket/polling), lo cual **no es compatible con Lambda** (ejecución bajo demanda y con timeout). Para esa parte conviene un contenedor "siempre encendido" en **ECS Fargate** (las imágenes Docker que ya creamos sirven directo para esto).
+1. **Base de datos**: el backend usa **PostgreSQL** (vía `pg`), compatible directamente con **RDS PostgreSQL**. Solo hay que apuntar `DATABASE_URL` al endpoint de RDS.
+2. **Backend (API + bots de WhatsApp/Telegram)**: al mantener conexiones persistentes (socket/polling), conviene un contenedor "siempre encendido" en **ECS Fargate** — las imágenes Docker que ya creamos sirven directo para esto.
 
-Una arquitectura mixta razonable sería: Lambda + API Gateway para los endpoints REST sin estado, ECS Fargate para los bots (WhatsApp/Telegram), RDS para la base de datos, y S3 + CloudFront para el frontend. Lo vemos en detalle cuando llegues a esa fase.
+Arquitectura objetivo: ECS Fargate (un solo servicio con la API y los bots), RDS PostgreSQL para la base de datos, y S3 + CloudFront para el frontend, todo provisionado con Terraform.

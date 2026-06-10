@@ -1,0 +1,30 @@
+# Copia este archivo a terraform.tfvars y completa los valores reales.
+# terraform.tfvars NO debe subirse a git (contiene secretos).
+
+aws_region   = "us-east-1"
+project_name = "pqr-clasificador"
+environment  = "prod"
+
+# ─── Base de datos ────────────────────────────────────────────────────────────
+db_password = "CAMBIA_ESTA_PASSWORD_SEGURA"
+
+# ─── Secretos de la aplicación ───────────────────────────────────────────────
+jwt_secret         = "CAMBIA_ESTA_CLAVE_LARGA_Y_ALEATORIA"
+admin_email        = "admin@tupqr.edu.co"
+admin_password     = "CAMBIA_ESTA_PASSWORD_SEGURA"
+openrouter_api_key = "sk-or-..."
+
+# Email (opcional — dejar vacío si no se usa)
+email_user = "tucorreo@gmail.com"
+email_pass = "tu_app_password_de_gmail"
+email_from = "\"Sistema PQR\" <tucorreo@gmail.com>"
+
+# Telegram (opcional — dejar vacío si no se usa)
+telegram_bot_token = ""
+
+# Si no quieres correr WhatsApp/Telegram en AWS:
+# whatsapp_enabled = false
+# telegram_enabled = false
+
+# Tag de la imagen ya subida a ECR (ver README para el flujo de build/push)
+backend_image_tag = "latest"

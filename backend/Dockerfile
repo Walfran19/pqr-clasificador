@@ -1,11 +1,7 @@
-# ─── Etapa 1: dependencias (incluye toolchain para compilar better-sqlite3) ──
+# ─── Etapa 1: dependencias ────────────────────────────────────────────────────
 FROM node:22-bookworm-slim AS deps
 
 WORKDIR /app
-
-RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 make g++ \
- && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm ci --omit=dev
@@ -14,16 +10,15 @@ RUN npm ci --omit=dev
 FROM node:22-bookworm-slim AS runtime
 
 ENV NODE_ENV=production \
-    PORT=3001 \
-    DB_PATH=/app/data/database.db
+    PORT=3001
 
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Volúmenes para datos persistentes: base de datos y sesión de WhatsApp (Baileys)
-RUN mkdir -p /app/data /app/wa-auth
+# Volumen para datos persistentes: sesión de WhatsApp (Baileys)
+RUN mkdir -p /app/wa-auth
 
 EXPOSE 3001
 

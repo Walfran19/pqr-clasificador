@@ -7,14 +7,14 @@ if (!process.env.JWT_SECRET) {
 }
 const SECRET = process.env.JWT_SECRET || "pqr_secret_2026";
 
-function login(req, res) {
+async function login(req, res) {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ ok: false, error: "Email y contraseña requeridos." });
   }
 
-  const usuario = db.prepare("SELECT * FROM usuarios WHERE email = ?").get(email);
+  const usuario = await db.prepare("SELECT * FROM usuarios WHERE email = ?").get(email);
 
   if (!usuario || !bcrypt.compareSync(password, usuario.password)) {
     return res.status(401).json({ ok: false, error: "Credenciales incorrectas." });
@@ -33,7 +33,7 @@ function login(req, res) {
   });
 }
 
-function register(req, res) {
+async function register(req, res) {
   const { nombre, cedula, email, password } = req.body;
 
   if (!nombre || !email || !password) {
@@ -44,14 +44,14 @@ function register(req, res) {
     return res.status(400).json({ ok: false, error: "La contraseña debe tener al menos 6 caracteres." });
   }
 
-  const existe = db.prepare("SELECT id FROM usuarios WHERE email = ?").get(email);
+  const existe = await db.prepare("SELECT id FROM usuarios WHERE email = ?").get(email);
   if (existe) {
     return res.status(409).json({ ok: false, error: "Ya existe una cuenta con ese correo." });
   }
 
   const hash = bcrypt.hashSync(password, 10);
-  const result = db.prepare(
-    "INSERT INTO usuarios (nombre, cedula, email, password, rol) VALUES (?, ?, ?, ?, 'user')"
+  const result = await db.prepare(
+    "INSERT INTO usuarios (nombre, cedula, email, password, rol) VALUES (?, ?, ?, ?, 'user') RETURNING id"
   ).run(nombre, cedula || null, email, hash);
 
   const token = jwt.sign(

@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pqr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pqr
+      POSTGRES_PASSWORD: pqr
+      POSTGRES_DB: pqr
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - pqr-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pqr -d pqr"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -7,11 +25,14 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      DB_PATH: /app/data/database.db
+      DATABASE_URL: postgresql://pqr:pqr@postgres:5432/pqr
+      PGSSL: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "3001:3001"
     volumes:
-      - db-data:/app/data
       - wa-auth-data:/app/wa-auth
     networks:
       - pqr-net
@@ -31,7 +52,7 @@ services:
       - pqr-net
 
 volumes:
-  db-data:
+  pg-data:
   wa-auth-data:
 
 networks:

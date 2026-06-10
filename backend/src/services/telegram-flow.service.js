@@ -7,6 +7,7 @@ const { transcribirAudio }          = require("./transcription.service");
 
 const PLAZOS = { Alta: "24 horas", Media: "3 días hábiles", Baja: "5 días hábiles" };
 const INACTIVIDAD_HORAS = 24;
+const NOW_BOGOTA = "TO_CHAR(NOW() AT TIME ZONE 'America/Bogota', 'YYYY-MM-DD HH24:MI:SS')";
 
 // ─── Menú principal ───────────────────────────────────────────────────────────
 
@@ -28,16 +29,16 @@ function getConv(chatId) {
   return db.prepare("SELECT * FROM conversaciones_tg WHERE chat_id = ?").get(String(chatId));
 }
 
-function saveConv(chatId, campos) {
+async function saveConv(chatId, campos) {
   const id = String(chatId);
-  const existe = db.prepare("SELECT chat_id FROM conversaciones_tg WHERE chat_id = ?").get(id);
+  const existe = await db.prepare("SELECT chat_id FROM conversaciones_tg WHERE chat_id = ?").get(id);
   if (existe) {
     const keys = Object.keys(campos);
     const sets = keys.map(k => `${k} = ?`).join(", ");
-    db.prepare(`UPDATE conversaciones_tg SET ${sets}, updated_at = CURRENT_TIMESTAMP WHERE chat_id = ?`)
+    await db.prepare(`UPDATE conversaciones_tg SET ${sets}, updated_at = ${NOW_BOGOTA} WHERE chat_id = ?`)
       .run(...keys.map(k => campos[k]), id);
   } else {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO conversaciones_tg (chat_id, paso, nombre, cedula, email, ultimo_codigo, ultima_clasificacion)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -69,7 +70,7 @@ function estaInactivo(conv) {
 
 // ─── Lógica de followup ───────────────────────────────────────────────────────
 
-function respuestaFollowup(txt, clasificacion, codigo) {
+async function respuestaFollowup(txt, clasificacion, codigo) {
   const t = txt.toLowerCase();
 
   if (/nuevo\s*caso|otro\s*caso|otra\s*queja|radicar/i.test(t))
@@ -85,7 +86,7 @@ function respuestaFollowup(txt, clasificacion, codigo) {
     return `📌 Tu código es *${codigo}*. Escribe *CONSULTAR ${codigo}* para ver el estado.`;
 
   if (/estado|cómo va|como va|novedad/i.test(t)) {
-    const pqr = db.prepare("SELECT estado, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, respuesta FROM pqr WHERE codigo = ?").get(codigo);
     if (pqr) return `📋 Estado de *${codigo}*: *${pqr.estado}*${pqr.respuesta ? "\n\n💬 Respuesta:\n" + pqr.respuesta : ""}`;
   }
 
@@ -102,7 +103,7 @@ async function procesarMensajeTG(chatId, texto) {
   const matchConsulta = txt.match(/^consultar\s+(PQR-\d{4}-\d{4})$/i);
   if (matchConsulta) {
     const codigo = matchConsulta[1].toUpperCase();
-    const pqr = db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
     if (pqr) {
       const resp = pqr.respuesta ? `\n\n💬 *Respuesta:*\n${pqr.respuesta}` : "";
       await responder(chatId, `📋 *Estado del caso ${codigo}*\n\n📌 Estado: *${pqr.estado}*\n🏷️ Tipo: ${pqr.tipo} — ${pqr.categoria}\n⚡ Prioridad: ${pqr.prioridad}${resp}`);
@@ -112,11 +113,11 @@ async function procesarMensajeTG(chatId, texto) {
     return;
   }
 
-  let conv = getConv(chatId);
+  let conv = await getConv(chatId);
 
   // Usuario completamente nuevo: iniciar con cualquier mensaje
   if (!conv) {
-    saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
       "👋 ¡Hola! Soy *Valeria*, tu asistente virtual del sistema de *PQR* de la institución educativa.",
       MENU_OPCIONES
@@ -126,21 +127,21 @@ async function procesarMensajeTG(chatId, texto) {
 
   // Reiniciar — borrar conversación para exigir el trigger de nuevo
   if (/^(reiniciar|reset|cancelar)$/i.test(txt)) {
-    db.prepare("DELETE FROM conversaciones_tg WHERE chat_id = ?").run(String(chatId));
+    await db.prepare("DELETE FROM conversaciones_tg WHERE chat_id = ?").run(String(chatId));
     await responder(chatId, 'Conversación reiniciada. Cuando quieras comenzar escribe:\n\n*Hola, vengo a dejar una PQR*');
     return;
   }
 
   // Volver al menú principal en cualquier momento
   if (RE_MENU.test(txt) && conv.paso !== "procesando") {
-    saveConv(chatId, { paso: "menu" });
+    await saveConv(chatId, { paso: "menu" });
     await responder(chatId, MENU_OPCIONES);
     return;
   }
 
   // Usuario que vuelve después de inactividad → mostrar menú de nuevo
   if (estaInactivo(conv) && conv.paso !== "procesando") {
-    saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+    await saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
       "👋 ¡Hola de nuevo! Soy *Valeria*, ¿en qué puedo ayudarte hoy?",
       MENU_OPCIONES
@@ -154,12 +155,12 @@ async function procesarMensajeTG(chatId, texto) {
 
   if (paso === "menu") {
     if (txt === "1") {
-      saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
       await responder(chatId, "📋 Perfecto, vamos a radicar tu PQR. ¿Cuál es tu *nombre completo*?");
       return;
     }
     if (txt === "2") {
-      saveConv(chatId, { paso: "consultar_cedula" });
+      await saveConv(chatId, { paso: "consultar_cedula" });
       await responder(chatId,
         "🪪 Escribe tu *número de cédula* para ver tus casos registrados.",
         VOLVER_MENU
@@ -172,7 +173,7 @@ async function procesarMensajeTG(chatId, texto) {
 
   if (paso === "consultar_cedula") {
     if (txt === "0") {
-      saveConv(chatId, { paso: "menu" });
+      await saveConv(chatId, { paso: "menu" });
       await responder(chatId, MENU_OPCIONES);
       return;
     }
@@ -183,7 +184,7 @@ async function procesarMensajeTG(chatId, texto) {
       return;
     }
 
-    const casos = db.prepare(
+    const casos = await db.prepare(
       "SELECT codigo, categoria, estado, fecha FROM pqr WHERE cedula = ? ORDER BY fecha DESC LIMIT 9"
     ).all(cedula);
 
@@ -197,7 +198,7 @@ async function procesarMensajeTG(chatId, texto) {
       `${NUMS[i]} *${c.codigo}* — ${c.categoria} (${c.estado}) — ${(c.fecha || "").slice(0, 10)}`
     ).join("\n");
 
-    saveConv(chatId, {
+    await saveConv(chatId, {
       paso: "consultar_lista",
       ultima_clasificacion: JSON.stringify(casos.map(c => c.codigo)),
     });
@@ -211,7 +212,7 @@ async function procesarMensajeTG(chatId, texto) {
 
   if (paso === "consultar_lista") {
     if (txt === "0") {
-      saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
+      await saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
       await responder(chatId, MENU_OPCIONES);
       return;
     }
@@ -226,7 +227,7 @@ async function procesarMensajeTG(chatId, texto) {
     }
 
     const codigo = codigos[idx - 1];
-    const pqr = db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
+    const pqr = await db.prepare("SELECT estado, tipo, categoria, prioridad, respuesta FROM pqr WHERE codigo = ?").get(codigo);
 
     if (pqr) {
       const resp = pqr.respuesta ? `\n\n💬 *Respuesta:*\n${pqr.respuesta}` : "";
@@ -235,7 +236,7 @@ async function procesarMensajeTG(chatId, texto) {
       await responder(chatId, `❌ No encontré información del caso *${codigo}*.`);
     }
 
-    saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
+    await saveConv(chatId, { paso: "menu", ultima_clasificacion: null });
     await responder(chatId, MENU_OPCIONES);
     return;
   }
@@ -245,7 +246,7 @@ async function procesarMensajeTG(chatId, texto) {
       await responder(chatId, "⚠️ Por favor ingresa tu nombre completo.");
       return;
     }
-    saveConv(chatId, { paso: "cedula", nombre: txt });
+    await saveConv(chatId, { paso: "cedula", nombre: txt });
     await responder(chatId,
       `Gracias, *${txt}*. 👋`,
       "🪪 Ahora ingresa tu *número de cédula* (solo números)."
@@ -258,7 +259,7 @@ async function procesarMensajeTG(chatId, texto) {
       await responder(chatId, "❌ Ingresa un número de cédula válido (solo números, entre 5 y 12 dígitos).");
       return;
     }
-    saveConv(chatId, { paso: "email", cedula: txt.replace(/\s/g, "") });
+    await saveConv(chatId, { paso: "email", cedula: txt.replace(/\s/g, "") });
     await responder(chatId,
       "✅ Cédula registrada.",
       "📧 ¿Cuál es tu *correo electrónico*? Te notificaremos cuando haya novedades."
@@ -272,9 +273,9 @@ async function procesarMensajeTG(chatId, texto) {
       return;
     }
     const emailLower = txt.toLowerCase();
-    saveConv(chatId, { paso: "caso", email: emailLower });
+    await saveConv(chatId, { paso: "caso", email: emailLower });
 
-    const existentes = db.prepare(
+    const existentes = await db.prepare(
       "SELECT codigo, estado FROM pqr WHERE LOWER(email) = ? ORDER BY fecha DESC LIMIT 5"
     ).all(emailLower);
 
@@ -307,14 +308,14 @@ async function procesarMensajeTG(chatId, texto) {
       return;
     }
 
-    saveConv(chatId, { paso: "procesando" });
+    await saveConv(chatId, { paso: "procesando" });
     await responder(chatId, "⏳ Evaluando su caso... espere un momento.");
 
     try {
       const clasificacion = await clasificarPQR(txt);
       const codigo        = generarCodigo();
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO pqr (codigo, texto, nombre, cedula, email, tipo, categoria, prioridad, sentimiento, area, resumen, respuesta, confianza)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
@@ -324,7 +325,7 @@ async function procesarMensajeTG(chatId, texto) {
         clasificacion.resumen, clasificacion.respuesta || null, clasificacion.confianza
       );
 
-      saveConv(chatId, {
+      await saveConv(chatId, {
         paso: "followup",
         ultimo_codigo: codigo,
         ultima_clasificacion: JSON.stringify(clasificacion),
@@ -351,7 +352,7 @@ async function procesarMensajeTG(chatId, texto) {
 
     } catch (err) {
       console.error("[TG Flow] Error clasificando:", err.message);
-      saveConv(chatId, { paso: "caso" });
+      await saveConv(chatId, { paso: "caso" });
       await responder(chatId, "❌ Ocurrió un error al procesar tu caso. Por favor intenta de nuevo.");
     }
     return;
@@ -362,9 +363,9 @@ async function procesarMensajeTG(chatId, texto) {
     try { clasificacion = JSON.parse(conv.ultima_clasificacion || "{}"); } catch {}
     const codigo = conv.ultimo_codigo;
 
-    const respuesta = respuestaFollowup(txt, clasificacion, codigo);
+    const respuesta = await respuestaFollowup(txt, clasificacion, codigo);
     if (respuesta === null) {
-      saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
+      await saveConv(chatId, { paso: "nombre", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
       await responder(chatId,
         "📝 Claro, vamos a radicar un nuevo caso.",
         "¿Cuál es tu *nombre completo*?"
@@ -376,7 +377,7 @@ async function procesarMensajeTG(chatId, texto) {
   }
 
   // Estado desconocido — volver al menú
-  saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null });
+  await saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null });
   await responder(chatId, "👋 ¡Hola! Soy *Valeria*, el asistente de PQR.\n\n" + MENU_OPCIONES);
 }
 
@@ -410,7 +411,7 @@ async function manejarMensajeTG(msg) {
 // ─── Notificaciones desde el panel admin ─────────────────────────────────────
 
 async function notificarCambioEstadoTG(email, codigo, estado) {
-  const conv = db.prepare("SELECT chat_id FROM conversaciones_tg WHERE LOWER(email) = ?").get(email.toLowerCase());
+  const conv = await db.prepare("SELECT chat_id FROM conversaciones_tg WHERE LOWER(email) = ?").get(email.toLowerCase());
   if (!conv) return;
   const mensajes = {
     "En proceso": `📋 Tu caso *${codigo}* está ahora *En proceso*. Un funcionario está revisando tu solicitud.`,
@@ -421,7 +422,7 @@ async function notificarCambioEstadoTG(email, codigo, estado) {
 }
 
 async function notificarRespuestaTG(email, codigo, respuesta) {
-  const conv = db.prepare("SELECT chat_id FROM conversaciones_tg WHERE LOWER(email) = ?").get(email.toLowerCase());
+  const conv = await db.prepare("SELECT chat_id FROM conversaciones_tg WHERE LOWER(email) = ?").get(email.toLowerCase());
   if (!conv) return;
   await enviarMensajeTG(conv.chat_id, `💬 *Respuesta oficial para tu caso ${codigo}:*\n\n${respuesta}`).catch(() => {});
 }
