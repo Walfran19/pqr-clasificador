@@ -266,17 +266,17 @@ export default function Chat() {
     const ms = [];
     if (!usuario) {
       ms.push(
-        msg("bot", "Hola, soy el asistente de PQR de tu institución."),
+        msg("bot", "Hola, soy Valeria, el asistente de PQR de tu institución."),
         msg("bot", "Para comenzar, ¿cuál es tu nombre completo?")
       );
     } else if (!usuario.cedula) {
       ms.push(
-        msg("bot", `Bienvenido, ${usuario.nombre}.`),
+        msg("bot", `Bienvenido, ${usuario.nombre}. Soy Valeria.`),
         msg("bot", "Para identificar tu caso necesito tu número de cédula.")
       );
     } else {
       ms.push(
-        msg("bot", `Hola, ${usuario.nombre}. Estoy listo para ayudarte.`),
+        msg("bot", `Hola, ${usuario.nombre}. Soy Valeria, estoy lista para ayudarte.`),
         msg("bot", "Cuéntame tu caso con detalle. ¿Qué petición, queja o reclamo tienes?")
       );
     }

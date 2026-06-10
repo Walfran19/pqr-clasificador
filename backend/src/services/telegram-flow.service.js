@@ -118,7 +118,7 @@ async function procesarMensajeTG(chatId, texto) {
   if (!conv) {
     saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
-      "👋 ¡Bienvenido al sistema de *PQR* de la institución educativa!",
+      "👋 ¡Hola! Soy *Valeria*, tu asistente virtual del sistema de *PQR* de la institución educativa.",
       MENU_OPCIONES
     );
     return;
@@ -142,7 +142,7 @@ async function procesarMensajeTG(chatId, texto) {
   if (estaInactivo(conv) && conv.paso !== "procesando") {
     saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(chatId,
-      "👋 ¡Bienvenido de nuevo!",
+      "👋 ¡Hola de nuevo! Soy *Valeria*, ¿en qué puedo ayudarte hoy?",
       MENU_OPCIONES
     );
     return;
@@ -377,7 +377,7 @@ async function procesarMensajeTG(chatId, texto) {
 
   // Estado desconocido — volver al menú
   saveConv(chatId, { paso: "menu", nombre: null, cedula: null, email: null });
-  await responder(chatId, "👋 ¡Hola! Soy el asistente de PQR.\n\n" + MENU_OPCIONES);
+  await responder(chatId, "👋 ¡Hola! Soy *Valeria*, el asistente de PQR.\n\n" + MENU_OPCIONES);
 }
 
 // ─── Manejador unificado (texto + audio) ──────────────────────────────────────

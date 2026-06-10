@@ -120,7 +120,7 @@ async function procesarMensaje(phone, texto) {
     if (!TRIGGER.test(txt)) return;
     saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(phone,
-      "👋 ¡Bienvenido al sistema de *PQR* de la institución educativa!",
+      "👋 ¡Hola! Soy *Valeria*, tu asistente virtual del sistema de *PQR* de la institución educativa.",
       MENU_OPCIONES
     );
     return;
@@ -144,7 +144,7 @@ async function procesarMensaje(phone, texto) {
   if (estaInactivo(conv) && conv.paso !== "procesando") {
     saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null, ultimo_codigo: null, ultima_clasificacion: null });
     await responder(phone,
-      "👋 ¡Bienvenido de nuevo!",
+      "👋 ¡Hola de nuevo! Soy *Valeria*, ¿en qué puedo ayudarte hoy?",
       MENU_OPCIONES
     );
     return;
@@ -379,7 +379,7 @@ async function procesarMensaje(phone, texto) {
 
   // Estado desconocido — volver al menú
   saveConv(phone, { paso: "menu", nombre: null, cedula: null, email: null });
-  await responder(phone, "👋 ¡Hola! Soy el asistente de PQR.\n\n" + MENU_OPCIONES);
+  await responder(phone, "👋 ¡Hola! Soy *Valeria*, el asistente de PQR.\n\n" + MENU_OPCIONES);
 }
 
 // ─── Manejador unificado (texto + audio) ─────────────────────────────────────
