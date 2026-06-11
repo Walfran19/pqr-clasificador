@@ -24,6 +24,11 @@ FROM nginx:1.27-alpine AS runtime
 
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY public/runtime-config.template.js /usr/share/nginx/html/runtime-config.template.js
+COPY docker-entrypoint.d/40-runtime-config.sh /docker-entrypoint.d/40-runtime-config.sh
+RUN chmod +x /docker-entrypoint.d/40-runtime-config.sh
+
+ENV API_BASE_URL=""
 
 EXPOSE 80
 

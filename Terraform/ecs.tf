@@ -1,5 +1,5 @@
 resource "aws_ecs_cluster" "main" {
-  name = "${var.project_name}-cluster"
+  name = "${var.project_name}-v2-cluster"
 
   setting {
     name  = "containerInsights"
@@ -7,19 +7,97 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "backend" {
-  name              = "/ecs/${var.project_name}-backend"
+# ─── Frontend (nginx) ────────────────────────────────────────────────────────
+# Sirve los estáticos del SPA detrás del ALB. Las llamadas a la API van
+# directo desde el navegador a API Gateway (ver apigateway.tf), inyectadas
+# en runtime via /runtime-config.js (API_BASE_URL).
+
+resource "aws_cloudwatch_log_group" "frontend" {
+  name              = "/ecs/${var.project_name}-v2-frontend"
   retention_in_days = 14
 }
 
-resource "aws_ecs_task_definition" "backend" {
-  family                   = "${var.project_name}-backend"
+resource "aws_ecs_task_definition" "frontend" {
+  family                   = "${var.project_name}-v2-frontend"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = data.aws_iam_role.lab_role.arn
+  task_role_arn            = data.aws_iam_role.lab_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "frontend"
+      image     = "${aws_ecr_repository.this["frontend"].repository_url}:latest"
+      essential = true
+
+      portMappings = [
+        {
+          containerPort = 80
+          protocol      = "tcp"
+        }
+      ]
+
+      environment = [
+        { name = "API_BASE_URL", value = aws_apigatewayv2_stage.default.invoke_url },
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.frontend.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "frontend"
+        }
+      }
+    }
+  ])
+
+  tags = {
+    Name = "${var.project_name}-v2-frontend-task"
+  }
+}
+
+resource "aws_ecs_service" "frontend" {
+  name            = "${var.project_name}-v2-frontend"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.frontend.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.public[*].id
+    security_groups  = [aws_security_group.frontend_ecs.id]
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.frontend.arn
+    container_name   = "frontend"
+    container_port   = 80
+  }
+
+  depends_on = [aws_lb_listener.http]
+}
+
+# ─── Bots (WhatsApp + Telegram + consumidor SQS) ────────────────────────────
+# Proceso persistente: mantiene la sesión de WhatsApp (Baileys, EFS) y el
+# polling de Telegram, además de un consumidor de la cola de notificaciones.
+
+resource "aws_cloudwatch_log_group" "bots" {
+  name              = "/ecs/${var.project_name}-v2-bots"
+  retention_in_days = 14
+}
+
+resource "aws_ecs_task_definition" "bots" {
+  family                   = "${var.project_name}-v2-bots"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "512"
   memory                   = "1024"
-  execution_role_arn       = aws_iam_role.ecs_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
+  execution_role_arn       = data.aws_iam_role.lab_role.arn
+  task_role_arn            = data.aws_iam_role.lab_role.arn
 
   volume {
     name = "wa-auth"
@@ -37,16 +115,9 @@ resource "aws_ecs_task_definition" "backend" {
 
   container_definitions = jsonencode([
     {
-      name      = "backend"
-      image     = "${aws_ecr_repository.backend.repository_url}:${var.backend_image_tag}"
+      name      = "bots"
+      image     = "${aws_ecr_repository.this["backend_bot"].repository_url}:latest"
       essential = true
-
-      portMappings = [
-        {
-          containerPort = var.container_port
-          protocol      = "tcp"
-        }
-      ]
 
       mountPoints = [
         {
@@ -56,68 +127,52 @@ resource "aws_ecs_task_definition" "backend" {
       ]
 
       environment = [
-        { name = "PORT", value = tostring(var.container_port) },
         { name = "NODE_ENV", value = "production" },
         { name = "WHATSAPP_ENABLED", value = tostring(var.whatsapp_enabled) },
         { name = "TELEGRAM_ENABLED", value = tostring(var.telegram_enabled) },
-        { name = "EMAIL_HOST", value = var.email_host },
-        { name = "EMAIL_PORT", value = var.email_port },
-        { name = "EMAIL_FROM", value = var.email_from },
-        { name = "FRONTEND_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}" },
-        { name = "APP_URL", value = "https://${aws_cloudfront_distribution.frontend.domain_name}" },
+        { name = "FRONTEND_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "APP_URL", value = "http://${aws_lb.main.dns_name}" },
+        { name = "NOTIFY_QUEUE_URL", value = aws_sqs_queue.notifications.url },
       ]
 
       secrets = [
         { name = "DATABASE_URL", valueFrom = aws_ssm_parameter.database_url.arn },
-        { name = "JWT_SECRET", valueFrom = aws_ssm_parameter.jwt_secret.arn },
-        { name = "ADMIN_EMAIL", valueFrom = aws_ssm_parameter.admin_email.arn },
-        { name = "ADMIN_PASSWORD", valueFrom = aws_ssm_parameter.admin_password.arn },
         { name = "OPENROUTER_API_KEY", valueFrom = aws_ssm_parameter.openrouter_api_key.arn },
-        { name = "EMAIL_USER", valueFrom = aws_ssm_parameter.email_user.arn },
-        { name = "EMAIL_PASS", valueFrom = aws_ssm_parameter.email_pass.arn },
         { name = "TELEGRAM_BOT_TOKEN", valueFrom = aws_ssm_parameter.telegram_bot_token.arn },
       ]
 
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.backend.name
+          "awslogs-group"         = aws_cloudwatch_log_group.bots.name
           "awslogs-region"        = var.aws_region
-          "awslogs-stream-prefix" = "backend"
+          "awslogs-stream-prefix" = "bots"
         }
       }
     }
   ])
 
   tags = {
-    Name = "${var.project_name}-backend-task"
+    Name = "${var.project_name}-v2-bots-task"
   }
 }
 
-resource "aws_ecs_service" "backend" {
-  name            = "${var.project_name}-backend"
+resource "aws_ecs_service" "bots" {
+  name            = "${var.project_name}-v2-bots"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.backend.arn
+  task_definition = aws_ecs_task_definition.bots.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
     subnets          = aws_subnet.private[*].id
-    security_groups  = [aws_security_group.ecs.id]
+    security_groups  = [aws_security_group.bots_ecs.id]
     assign_public_ip = false
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.backend.arn
-    container_name   = "backend"
-    container_port   = var.container_port
-  }
-
-  # Una sola tarea: los bots de WhatsApp/Telegram mantienen una sesión
-  # persistente (socket/polling), por lo que no se debe escalar
-  # horizontalmente sin cambios adicionales en la arquitectura.
+  # Una sola tarea: las sesiones de WhatsApp/Telegram son persistentes
+  # (socket/polling), por lo que no se debe escalar horizontalmente sin
+  # cambios adicionales en la arquitectura.
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent         = 200
-
-  depends_on = [aws_lb_listener.http]
 }

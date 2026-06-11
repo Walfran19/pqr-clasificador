@@ -1,0 +1,309 @@
+data.aws_caller_identity.current: Reading...
+aws_ecs_cluster.main: Refreshing state... [id=arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster]
+aws_ssm_parameter.openrouter_api_key: Refreshing state... [id=/pqr-clasificador/prod/OPENROUTER_API_KEY]
+aws_ssm_parameter.jwt_secret: Refreshing state... [id=/pqr-clasificador/prod/JWT_SECRET]
+aws_ssm_parameter.email_pass: Refreshing state... [id=/pqr-clasificador/prod/EMAIL_PASS]
+aws_ssm_parameter.telegram_bot_token: Refreshing state... [id=/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN]
+aws_efs_file_system.wa_auth: Refreshing state... [id=fs-0fb0d483be39acbc7]
+aws_ecr_repository.backend: Refreshing state... [id=pqr-clasificador-backend]
+aws_ssm_parameter.email_user: Refreshing state... [id=/pqr-clasificador/prod/EMAIL_USER]
+aws_eip.nat: Refreshing state... [id=eipalloc-04d2735f559102a55]
+data.aws_caller_identity.current: Read complete after 0s [id=447958713966]
+aws_cloudwatch_log_group.backend: Refreshing state... [id=/ecs/pqr-clasificador-backend]
+data.aws_iam_role.lab_role: Reading...
+data.aws_availability_zones.available: Reading...
+aws_ssm_parameter.admin_email: Refreshing state... [id=/pqr-clasificador/prod/ADMIN_EMAIL]
+aws_ssm_parameter.admin_password: Refreshing state... [id=/pqr-clasificador/prod/ADMIN_PASSWORD]
+aws_vpc.main: Refreshing state... [id=vpc-0a8eda73acd7ac31d]
+aws_s3_bucket.frontend: Refreshing state... [id=pqr-clasificador-frontend-447958713966]
+aws_ecr_lifecycle_policy.backend: Refreshing state... [id=pqr-clasificador-backend]
+data.aws_availability_zones.available: Read complete after 1s [id=us-east-1]
+aws_efs_access_point.wa_auth: Refreshing state... [id=fsap-0aaa1847976a664f7]
+data.aws_iam_role.lab_role: Read complete after 2s [id=LabRole]
+aws_internet_gateway.main: Refreshing state... [id=igw-040da9514410ba9d4]
+aws_subnet.private[0]: Refreshing state... [id=subnet-0bd21b78f667e797a]
+aws_subnet.private[1]: Refreshing state... [id=subnet-0167e8bca2bca79bd]
+aws_subnet.public[0]: Refreshing state... [id=subnet-0ad20253a2be3a7f8]
+aws_security_group.alb: Refreshing state... [id=sg-04f30210aaa56dbb1]
+aws_subnet.public[1]: Refreshing state... [id=subnet-0d79eb32a0266c02c]
+aws_lb_target_group.backend: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4]
+aws_route_table.public: Refreshing state... [id=rtb-0990111e9e89682e0]
+aws_db_subnet_group.main: Refreshing state... [id=pqr-clasificador-v2-db-subnet-group]
+aws_security_group.ecs: Refreshing state... [id=sg-0c9e8bc86a96285ac]
+aws_nat_gateway.main: Refreshing state... [id=nat-018c58ad5b0fae923]
+aws_lb.main: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a]
+aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-0ec9b7f319824bdb0]
+aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0ef99d5aabc69ab10]
+aws_security_group.efs: Refreshing state... [id=sg-00e90213a42a75adb]
+aws_security_group.rds: Refreshing state... [id=sg-0558482cfb618b3ac]
+aws_s3_bucket_public_access_block.frontend: Refreshing state... [id=pqr-clasificador-frontend-447958713966]
+aws_route_table.private: Refreshing state... [id=rtb-022034d5d36b4854d]
+aws_efs_mount_target.wa_auth[0]: Refreshing state... [id=fsmt-03de5273b752bc3bd]
+aws_efs_mount_target.wa_auth[1]: Refreshing state... [id=fsmt-06114c5d096752a00]
+aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-08b24ea1750dab4b7]
+aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-06f307d18b234829f]
+aws_db_instance.main: Refreshing state... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34]
+aws_lb_listener.http: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:listener/app/pqr-clasificador-v2-alb/195b7a45f1d2641a/62b825923ed3cdf4]
+aws_ssm_parameter.database_url: Refreshing state... [id=/pqr-clasificador/prod/DATABASE_URL]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.frontend will be created
+  + resource "aws_cloudfront_distribution" "frontend" {
+      + arn                             = (known after apply)
+      + caller_reference                = (known after apply)
+      + comment                         = "pqr-clasificador frontend"
+      + continuous_deployment_policy_id = (known after apply)
+      + default_root_object             = "index.html"
+      + domain_name                     = (known after apply)
+      + enabled                         = true
+      + etag                            = (known after apply)
+      + hosted_zone_id                  = (known after apply)
+      + http_version                    = "http2"
+      + id                              = (known after apply)
+      + in_progress_validation_batches  = (known after apply)
+      + is_ipv6_enabled                 = false
+      + last_modified_time              = (known after apply)
+      + price_class                     = "PriceClass_All"
+      + retain_on_delete                = false
+      + staging                         = false
+      + status                          = (known after apply)
+      + tags                            = {
+          + "Name" = "pqr-clasificador-frontend-cdn"
+        }
+      + tags_all                        = {
+          + "Name" = "pqr-clasificador-frontend-cdn"
+        }
+      + trusted_key_groups              = (known after apply)
+      + trusted_signers                 = (known after apply)
+      + wait_for_deployment             = true
+
+      + custom_error_response {
+          + error_code         = 403
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+      + custom_error_response {
+          + error_code         = 404
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+            ]
+          + cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = true
+          + default_ttl            = (known after apply)
+          + max_ttl                = (known after apply)
+          + min_ttl                = 0
+          + target_origin_id       = "s3-frontend"
+          + trusted_key_groups     = (known after apply)
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "redirect-to-https"
+
+          + grpc_config (known after apply)
+        }
+
+      + ordered_cache_behavior {
+          + allowed_methods          = [
+              + "DELETE",
+              + "GET",
+              + "HEAD",
+              + "OPTIONS",
+              + "PATCH",
+              + "POST",
+              + "PUT",
+            ]
+          + cache_policy_id          = "4135ea3d-c38f-4be3-a159-ca0a21b26898"
+          + cached_methods           = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress                 = false
+          + default_ttl              = (known after apply)
+          + max_ttl                  = (known after apply)
+          + min_ttl                  = 0
+          + origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa49d3"
+          + path_pattern             = "/api/*"
+          + target_origin_id         = "alb-backend"
+          + viewer_protocol_policy   = "redirect-to-https"
+
+          + grpc_config (known after apply)
+        }
+
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = "pqr-clasificador-v2-alb-1388817553.us-east-1.elb.amazonaws.com"
+          + origin_id                = "alb-backend"
+            # (2 unchanged attributes hidden)
+
+          + custom_origin_config {
+              + http_port                = 80
+              + https_port               = 443
+              + origin_keepalive_timeout = 5
+              + origin_protocol_policy   = "http-only"
+              + origin_read_timeout      = 30
+              + origin_ssl_protocols     = [
+                  + "TLSv1.2",
+                ]
+            }
+        }
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = "pqr-clasificador-frontend-447958713966.s3.us-east-1.amazonaws.com"
+          + origin_id                = "s3-frontend"
+            # (2 unchanged attributes hidden)
+
+          + s3_origin_config {
+                # (1 unchanged attribute hidden)
+            }
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = (known after apply)
+              + restriction_type = "none"
+            }
+        }
+
+      + viewer_certificate {
+          + cloudfront_default_certificate = true
+          + minimum_protocol_version       = "TLSv1"
+        }
+    }
+
+  # aws_ecs_service.backend will be created
+  + resource "aws_ecs_service" "backend" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = "arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster"
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 0
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "pqr-clasificador-backend"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags_all                           = (known after apply)
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "backend"
+          + container_port   = 3001
+          + target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4"
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = false
+          + security_groups  = [
+              + "sg-0c9e8bc86a96285ac",
+            ]
+          + subnets          = [
+              + "subnet-0167e8bca2bca79bd",
+              + "subnet-0bd21b78f667e797a",
+            ]
+        }
+    }
+
+  # aws_ecs_task_definition.backend will be created
+  + resource "aws_ecs_task_definition" "backend" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "512"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::447958713966:role/LabRole"
+      + family                   = "pqr-clasificador-backend"
+      + id                       = (known after apply)
+      + memory                   = "1024"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Name" = "pqr-clasificador-backend-task"
+        }
+      + tags_all                 = {
+          + "Name" = "pqr-clasificador-backend-task"
+        }
+      + task_role_arn            = "arn:aws:iam::447958713966:role/LabRole"
+      + track_latest             = false
+
+      + volume {
+          + configure_at_launch = (known after apply)
+          + name                = "wa-auth"
+            # (1 unchanged attribute hidden)
+
+          + efs_volume_configuration {
+              + file_system_id          = "fs-0fb0d483be39acbc7"
+              + root_directory          = "/"
+              + transit_encryption      = "ENABLED"
+              + transit_encryption_port = 0
+
+              + authorization_config {
+                  + access_point_id = "fsap-0aaa1847976a664f7"
+                  + iam             = "ENABLED"
+                }
+            }
+        }
+    }
+
+  # aws_s3_bucket_policy.frontend will be created
+  + resource "aws_s3_bucket_policy" "frontend" {
+      + bucket = "pqr-clasificador-frontend-447958713966"
+      + id     = (known after apply)
+      + policy = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "s3:GetObject"
+                      + Effect    = "Allow"
+                      + Principal = "*"
+                      + Resource  = "arn:aws:s3:::pqr-clasificador-frontend-447958713966/*"
+                      + Sid       = "PublicReadGetObject"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+    }
+
+  # aws_s3_bucket_public_access_block.frontend will be updated in-place
+  ~ resource "aws_s3_bucket_public_access_block" "frontend" {
+      ~ block_public_policy     = true -> false
+        id                      = "pqr-clasificador-frontend-447958713966"
+      ~ restrict_public_buckets = true -> false
+        # (3 unchanged attributes hidden)
+    }
+
+Plan: 4 to add, 1 to change, 0 to destroy.
+
+Changes to Outputs:
+  + cloudfront_domain_name = (known after apply)
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

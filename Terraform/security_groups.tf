@@ -23,15 +23,15 @@ resource "aws_security_group" "alb" {
   }
 }
 
-resource "aws_security_group" "ecs" {
-  name        = "${var.project_name}-ecs-sg"
-  description = "Trafico hacia las tareas de ECS Fargate (backend)"
+resource "aws_security_group" "frontend_ecs" {
+  name        = "${var.project_name}-v2-frontend-ecs-sg"
+  description = "Trafico hacia la tarea de ECS del frontend (nginx)"
   vpc_id      = aws_vpc.main.id
 
   ingress {
     description     = "Trafico desde el ALB"
-    from_port       = var.container_port
-    to_port         = var.container_port
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
@@ -44,21 +44,63 @@ resource "aws_security_group" "ecs" {
   }
 
   tags = {
-    Name = "${var.project_name}-ecs-sg"
+    Name = "${var.project_name}-v2-frontend-ecs-sg"
+  }
+}
+
+resource "aws_security_group" "lambda" {
+  name        = "${var.project_name}-v2-lambda-sg"
+  description = "Trafico saliente de la funcion Lambda del backend"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-v2-lambda-sg"
+  }
+}
+
+resource "aws_security_group" "bots_ecs" {
+  name        = "${var.project_name}-v2-bots-ecs-sg"
+  description = "Trafico saliente de la tarea de ECS de los bots WhatsApp/Telegram"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-v2-bots-ecs-sg"
   }
 }
 
 resource "aws_security_group" "rds" {
-  name        = "${var.project_name}-rds-sg"
-  description = "Acceso a PostgreSQL solo desde las tareas de ECS"
+  name        = "${var.project_name}-v2-rds-sg"
+  description = "Acceso a PostgreSQL desde la Lambda y los bots de ECS"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "PostgreSQL desde ECS"
+    description     = "PostgreSQL desde Lambda"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
+    security_groups = [aws_security_group.lambda.id]
+  }
+
+  ingress {
+    description     = "PostgreSQL desde ECS bots"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bots_ecs.id]
   }
 
   egress {
@@ -69,21 +111,21 @@ resource "aws_security_group" "rds" {
   }
 
   tags = {
-    Name = "${var.project_name}-rds-sg"
+    Name = "${var.project_name}-v2-rds-sg"
   }
 }
 
 resource "aws_security_group" "efs" {
-  name        = "${var.project_name}-efs-sg"
-  description = "Acceso NFS desde las tareas de ECS (sesion de WhatsApp persistente)"
+  name        = "${var.project_name}-v2-efs-sg"
+  description = "Acceso NFS desde la tarea de ECS de los bots (sesion de WhatsApp persistente)"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "NFS desde ECS"
+    description     = "NFS desde ECS bots"
     from_port       = 2049
     to_port         = 2049
     protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
+    security_groups = [aws_security_group.bots_ecs.id]
   }
 
   egress {
@@ -94,6 +136,6 @@ resource "aws_security_group" "efs" {
   }
 
   tags = {
-    Name = "${var.project_name}-efs-sg"
+    Name = "${var.project_name}-v2-efs-sg"
   }
 }

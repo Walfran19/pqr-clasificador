@@ -1,14 +1,14 @@
 resource "aws_db_subnet_group" "main" {
-  name       = "${var.project_name}-db-subnet-group"
+  name       = "${var.project_name}-v2-db-subnet-group"
   subnet_ids = aws_subnet.private[*].id
 
   tags = {
-    Name = "${var.project_name}-db-subnet-group"
+    Name = "${var.project_name}-v2-db-subnet-group"
   }
 }
 
 resource "aws_db_instance" "main" {
-  identifier     = "${var.project_name}-db"
+  identifier     = "${var.project_name}-v2-db"
   engine         = "postgres"
   engine_version = "16"
 
@@ -32,6 +32,6 @@ resource "aws_db_instance" "main" {
   deletion_protection     = false
 
   tags = {
-    Name = "${var.project_name}-db"
+    Name = "${var.project_name}-v2-db"
   }
 }

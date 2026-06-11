@@ -16,6 +16,15 @@ Provisiona toda la infraestructura para desplegar el sistema PQR en AWS:
 - AWS CLI configurado con credenciales que tengan permisos para crear esta infraestructura (`aws configure`)
 - Docker, para construir y subir la imagen del backend
 
+## AWS Academy Learner Lab
+
+Si despliegas en un **Learner Lab**, ten en cuenta:
+
+- **Credenciales temporales**: en el Lab, abre `AWS Details` → `AWS CLI: Show` y copia el contenido a `~/.aws/credentials` (perfil `default`). Incluye `aws_access_key_id`, `aws_secret_access_key` **y** `aws_session_token` (las 3 son obligatorias).
+- **Expiran cada ~3-4 horas** (al pausar/reiniciar el Lab). Si `terraform plan/apply` falla con `ExpiredToken` o `InvalidClientTokenId`, vuelve a copiar las credenciales y reintenta — el state no se pierde.
+- **Región fija `us-east-1`**: ya es el default en `variables.tf`, no la cambies.
+- **Sin permisos para crear roles/políticas IAM**: por eso `iam.tf` reutiliza el rol preexistente `LabRole` (vía `data "aws_iam_role"`) como execution y task role de ECS, en lugar de crear roles nuevos.
+
 ## 1. Configurar variables
 
 ```powershell

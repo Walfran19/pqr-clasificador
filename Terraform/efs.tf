@@ -3,7 +3,7 @@
 
 resource "aws_efs_file_system" "wa_auth" {
   creation_token = "${var.project_name}-wa-auth"
-  encrypted      = true
+  encrypted      = false  # AWS Learner Lab restricts KMS key access
 
   tags = {
     Name = "${var.project_name}-wa-auth"

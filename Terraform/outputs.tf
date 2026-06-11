@@ -1,11 +1,11 @@
-output "alb_dns_name" {
-  description = "DNS del Application Load Balancer (backend / API)"
-  value       = aws_lb.main.dns_name
+output "api_gateway_url" {
+  description = "URL invocable del API Gateway (backend serverless)"
+  value       = aws_apigatewayv2_stage.default.invoke_url
 }
 
-output "cloudfront_domain_name" {
-  description = "Dominio de CloudFront para acceder al frontend"
-  value       = aws_cloudfront_distribution.frontend.domain_name
+output "alb_dns_name" {
+  description = "DNS del Application Load Balancer (frontend)"
+  value       = aws_lb.main.dns_name
 }
 
 output "rds_endpoint" {
@@ -13,22 +13,22 @@ output "rds_endpoint" {
   value       = aws_db_instance.main.address
 }
 
-output "ecr_repository_url" {
-  description = "URL del repositorio ECR del backend (para docker push)"
-  value       = aws_ecr_repository.backend.repository_url
+output "ecr_backend_api_repository_url" {
+  description = "URL del repositorio ECR de la imagen Lambda del backend"
+  value       = aws_ecr_repository.this["backend_api"].repository_url
 }
 
-output "frontend_bucket_name" {
-  description = "Nombre del bucket S3 donde se sube el build del frontend"
-  value       = aws_s3_bucket.frontend.bucket
+output "ecr_backend_bot_repository_url" {
+  description = "URL del repositorio ECR de la imagen de los bots (ECS)"
+  value       = aws_ecr_repository.this["backend_bot"].repository_url
+}
+
+output "ecr_frontend_repository_url" {
+  description = "URL del repositorio ECR de la imagen del frontend (ECS)"
+  value       = aws_ecr_repository.this["frontend"].repository_url
 }
 
 output "ecs_cluster_name" {
   description = "Nombre del cluster de ECS"
   value       = aws_ecs_cluster.main.name
-}
-
-output "ecs_service_name" {
-  description = "Nombre del servicio de ECS del backend"
-  value       = aws_ecs_service.backend.name
 }

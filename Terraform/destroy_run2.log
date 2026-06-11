@@ -1,0 +1,1239 @@
+data.aws_availability_zones.available: Reading...
+data.aws_caller_identity.current: Reading...
+aws_s3_bucket_public_access_block.frontend: Refreshing state... [id=pqr-clasificador-frontend-447958713966]
+aws_ecs_cluster.main: Refreshing state... [id=arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster]
+aws_cloudwatch_log_group.backend: Refreshing state... [id=/ecs/pqr-clasificador-backend]
+aws_vpc.main: Refreshing state... [id=vpc-0a8eda73acd7ac31d]
+aws_ecr_repository.backend: Refreshing state... [id=pqr-clasificador-backend]
+aws_ssm_parameter.admin_password: Refreshing state... [id=/pqr-clasificador/prod/ADMIN_PASSWORD]
+aws_efs_file_system.wa_auth: Refreshing state... [id=fs-0fb0d483be39acbc7]
+aws_s3_bucket.frontend: Refreshing state... [id=pqr-clasificador-frontend-447958713966]
+data.aws_caller_identity.current: Read complete after 0s [id=447958713966]
+aws_ssm_parameter.email_user: Refreshing state... [id=/pqr-clasificador/prod/EMAIL_USER]
+data.aws_iam_role.lab_role: Reading...
+aws_ssm_parameter.openrouter_api_key: Refreshing state... [id=/pqr-clasificador/prod/OPENROUTER_API_KEY]
+data.aws_availability_zones.available: Read complete after 0s [id=us-east-1]
+aws_ssm_parameter.telegram_bot_token: Refreshing state... [id=/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN]
+aws_eip.nat: Refreshing state... [id=eipalloc-04d2735f559102a55]
+aws_ssm_parameter.email_pass: Refreshing state... [id=/pqr-clasificador/prod/EMAIL_PASS]
+aws_ssm_parameter.jwt_secret: Refreshing state... [id=/pqr-clasificador/prod/JWT_SECRET]
+data.aws_iam_role.lab_role: Read complete after 1s [id=LabRole]
+aws_ssm_parameter.admin_email: Refreshing state... [id=/pqr-clasificador/prod/ADMIN_EMAIL]
+aws_ecr_lifecycle_policy.backend: Refreshing state... [id=pqr-clasificador-backend]
+aws_efs_access_point.wa_auth: Refreshing state... [id=fsap-0aaa1847976a664f7]
+aws_internet_gateway.main: Refreshing state... [id=igw-040da9514410ba9d4]
+aws_subnet.private[0]: Refreshing state... [id=subnet-0bd21b78f667e797a]
+aws_security_group.alb: Refreshing state... [id=sg-04f30210aaa56dbb1]
+aws_subnet.public[0]: Refreshing state... [id=subnet-0ad20253a2be3a7f8]
+aws_subnet.private[1]: Refreshing state... [id=subnet-0167e8bca2bca79bd]
+aws_subnet.public[1]: Refreshing state... [id=subnet-0d79eb32a0266c02c]
+aws_lb_target_group.backend: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4]
+aws_route_table.public: Refreshing state... [id=rtb-0990111e9e89682e0]
+aws_security_group.ecs: Refreshing state... [id=sg-0c9e8bc86a96285ac]
+aws_db_subnet_group.main: Refreshing state... [id=pqr-clasificador-v2-db-subnet-group]
+aws_security_group.efs: Refreshing state... [id=sg-00e90213a42a75adb]
+aws_security_group.rds: Refreshing state... [id=sg-0558482cfb618b3ac]
+aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-0ec9b7f319824bdb0]
+aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0ef99d5aabc69ab10]
+aws_nat_gateway.main: Refreshing state... [id=nat-018c58ad5b0fae923]
+aws_lb.main: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a]
+aws_route_table.private: Refreshing state... [id=rtb-022034d5d36b4854d]
+aws_efs_mount_target.wa_auth[1]: Refreshing state... [id=fsmt-06114c5d096752a00]
+aws_efs_mount_target.wa_auth[0]: Refreshing state... [id=fsmt-03de5273b752bc3bd]
+aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-06f307d18b234829f]
+aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-08b24ea1750dab4b7]
+aws_lb_listener.http: Refreshing state... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:listener/app/pqr-clasificador-v2-alb/195b7a45f1d2641a/62b825923ed3cdf4]
+aws_db_instance.main: Refreshing state... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34]
+aws_ssm_parameter.database_url: Refreshing state... [id=/pqr-clasificador/prod/DATABASE_URL]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_cloudwatch_log_group.backend will be destroyed
+  - resource "aws_cloudwatch_log_group" "backend" {
+      - arn               = "arn:aws:logs:us-east-1:447958713966:log-group:/ecs/pqr-clasificador-backend" -> null
+      - id                = "/ecs/pqr-clasificador-backend" -> null
+      - log_group_class   = "STANDARD" -> null
+      - name              = "/ecs/pqr-clasificador-backend" -> null
+      - retention_in_days = 14 -> null
+      - skip_destroy      = false -> null
+      - tags              = {} -> null
+      - tags_all          = {} -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_db_instance.main will be destroyed
+  - resource "aws_db_instance" "main" {
+      - address                               = "pqr-clasificador-v2-db.cqcd3ryswf4g.us-east-1.rds.amazonaws.com" -> null
+      - allocated_storage                     = 20 -> null
+      - apply_immediately                     = false -> null
+      - arn                                   = "arn:aws:rds:us-east-1:447958713966:db:pqr-clasificador-v2-db" -> null
+      - auto_minor_version_upgrade            = true -> null
+      - availability_zone                     = "us-east-1a" -> null
+      - backup_retention_period               = 7 -> null
+      - backup_target                         = "region" -> null
+      - backup_window                         = "03:53-04:23" -> null
+      - ca_cert_identifier                    = "rds-ca-rsa2048-g1" -> null
+      - copy_tags_to_snapshot                 = false -> null
+      - customer_owned_ip_enabled             = false -> null
+      - database_insights_mode                = "standard" -> null
+      - db_name                               = "pqr" -> null
+      - db_subnet_group_name                  = "pqr-clasificador-v2-db-subnet-group" -> null
+      - dedicated_log_volume                  = false -> null
+      - delete_automated_backups              = true -> null
+      - deletion_protection                   = false -> null
+      - domain_dns_ips                        = [] -> null
+      - enabled_cloudwatch_logs_exports       = [] -> null
+      - endpoint                              = "pqr-clasificador-v2-db.cqcd3ryswf4g.us-east-1.rds.amazonaws.com:5432" -> null
+      - engine                                = "postgres" -> null
+      - engine_lifecycle_support              = "open-source-rds-extended-support" -> null
+      - engine_version                        = "16" -> null
+      - engine_version_actual                 = "16.13" -> null
+      - hosted_zone_id                        = "Z2R2ITUGPM61AM" -> null
+      - iam_database_authentication_enabled   = false -> null
+      - id                                    = "db-7FMWY2YC3RSYPXNNOF4MTDLK34" -> null
+      - identifier                            = "pqr-clasificador-v2-db" -> null
+      - instance_class                        = "db.t4g.micro" -> null
+      - iops                                  = 3000 -> null
+      - kms_key_id                            = "arn:aws:kms:us-east-1:447958713966:key/c3f6aaa2-6c3f-4995-9253-536812881356" -> null
+      - latest_restorable_time                = "2026-06-11T02:02:14Z" -> null
+      - license_model                         = "postgresql-license" -> null
+      - listener_endpoint                     = [] -> null
+      - maintenance_window                    = "fri:09:27-fri:09:57" -> null
+      - master_user_secret                    = [] -> null
+      - max_allocated_storage                 = 0 -> null
+      - monitoring_interval                   = 0 -> null
+      - multi_az                              = false -> null
+      - network_type                          = "IPV4" -> null
+      - option_group_name                     = "default:postgres-16" -> null
+      - parameter_group_name                  = "default.postgres16" -> null
+      - password                              = (sensitive value) -> null
+      - password_wo                           = (write-only attribute) -> null
+      - performance_insights_enabled          = false -> null
+      - performance_insights_retention_period = 0 -> null
+      - port                                  = 5432 -> null
+      - publicly_accessible                   = false -> null
+      - replicas                              = [] -> null
+      - resource_id                           = "db-7FMWY2YC3RSYPXNNOF4MTDLK34" -> null
+      - skip_final_snapshot                   = true -> null
+      - status                                = "available" -> null
+      - storage_encrypted                     = true -> null
+      - storage_throughput                    = 125 -> null
+      - storage_type                          = "gp3" -> null
+      - tags                                  = {
+          - "Name" = "pqr-clasificador-v2-db"
+        } -> null
+      - tags_all                              = {
+          - "Name" = "pqr-clasificador-v2-db"
+        } -> null
+      - username                              = "pqr_admin" -> null
+      - vpc_security_group_ids                = [
+          - "sg-0558482cfb618b3ac",
+        ] -> null
+        # (14 unchanged attributes hidden)
+    }
+
+  # aws_db_subnet_group.main will be destroyed
+  - resource "aws_db_subnet_group" "main" {
+      - arn                     = "arn:aws:rds:us-east-1:447958713966:subgrp:pqr-clasificador-v2-db-subnet-group" -> null
+      - description             = "Managed by Terraform" -> null
+      - id                      = "pqr-clasificador-v2-db-subnet-group" -> null
+      - name                    = "pqr-clasificador-v2-db-subnet-group" -> null
+      - subnet_ids              = [
+          - "subnet-0167e8bca2bca79bd",
+          - "subnet-0bd21b78f667e797a",
+        ] -> null
+      - supported_network_types = [
+          - "IPV4",
+        ] -> null
+      - tags                    = {
+          - "Name" = "pqr-clasificador-v2-db-subnet-group"
+        } -> null
+      - tags_all                = {
+          - "Name" = "pqr-clasificador-v2-db-subnet-group"
+        } -> null
+      - vpc_id                  = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_ecr_lifecycle_policy.backend will be destroyed
+  - resource "aws_ecr_lifecycle_policy" "backend" {
+      - id          = "pqr-clasificador-backend" -> null
+      - policy      = jsonencode(
+            {
+              - rules = [
+                  - {
+                      - action       = {
+                          - type = "expire"
+                        }
+                      - description  = "Conservar solo las ultimas 10 imagenes"
+                      - rulePriority = 1
+                      - selection    = {
+                          - countNumber = 10
+                          - countType   = "imageCountMoreThan"
+                          - tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        ) -> null
+      - registry_id = "447958713966" -> null
+      - repository  = "pqr-clasificador-backend" -> null
+    }
+
+  # aws_ecr_repository.backend will be destroyed
+  - resource "aws_ecr_repository" "backend" {
+      - arn                  = "arn:aws:ecr:us-east-1:447958713966:repository/pqr-clasificador-backend" -> null
+      - id                   = "pqr-clasificador-backend" -> null
+      - image_tag_mutability = "MUTABLE" -> null
+      - name                 = "pqr-clasificador-backend" -> null
+      - registry_id          = "447958713966" -> null
+      - repository_url       = "447958713966.dkr.ecr.us-east-1.amazonaws.com/pqr-clasificador-backend" -> null
+      - tags                 = {
+          - "Name" = "pqr-clasificador-backend"
+        } -> null
+      - tags_all             = {
+          - "Name" = "pqr-clasificador-backend"
+        } -> null
+
+      - encryption_configuration {
+          - encryption_type = "AES256" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - image_scanning_configuration {
+          - scan_on_push = true -> null
+        }
+    }
+
+  # aws_ecs_cluster.main will be destroyed
+  - resource "aws_ecs_cluster" "main" {
+      - arn      = "arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster" -> null
+      - id       = "arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster" -> null
+      - name     = "pqr-clasificador-v2-cluster" -> null
+      - tags     = {} -> null
+      - tags_all = {} -> null
+
+      - setting {
+          - name  = "containerInsights" -> null
+          - value = "disabled" -> null
+        }
+    }
+
+  # aws_efs_access_point.wa_auth will be destroyed
+  - resource "aws_efs_access_point" "wa_auth" {
+      - arn             = "arn:aws:elasticfilesystem:us-east-1:447958713966:access-point/fsap-0aaa1847976a664f7" -> null
+      - file_system_arn = "arn:aws:elasticfilesystem:us-east-1:447958713966:file-system/fs-0fb0d483be39acbc7" -> null
+      - file_system_id  = "fs-0fb0d483be39acbc7" -> null
+      - id              = "fsap-0aaa1847976a664f7" -> null
+      - owner_id        = "447958713966" -> null
+      - tags            = {
+          - "Name" = "pqr-clasificador-wa-auth-ap"
+        } -> null
+      - tags_all        = {
+          - "Name" = "pqr-clasificador-wa-auth-ap"
+        } -> null
+
+      - posix_user {
+          - gid            = 1000 -> null
+          - secondary_gids = [] -> null
+          - uid            = 1000 -> null
+        }
+
+      - root_directory {
+          - path = "/wa-auth" -> null
+
+          - creation_info {
+              - owner_gid   = 1000 -> null
+              - owner_uid   = 1000 -> null
+              - permissions = "755" -> null
+            }
+        }
+    }
+
+  # aws_efs_file_system.wa_auth will be destroyed
+  - resource "aws_efs_file_system" "wa_auth" {
+      - arn                             = "arn:aws:elasticfilesystem:us-east-1:447958713966:file-system/fs-0fb0d483be39acbc7" -> null
+      - creation_token                  = "pqr-clasificador-wa-auth" -> null
+      - dns_name                        = "fs-0fb0d483be39acbc7.efs.us-east-1.amazonaws.com" -> null
+      - encrypted                       = false -> null
+      - id                              = "fs-0fb0d483be39acbc7" -> null
+      - name                            = "pqr-clasificador-wa-auth" -> null
+      - number_of_mount_targets         = 2 -> null
+      - owner_id                        = "447958713966" -> null
+      - performance_mode                = "generalPurpose" -> null
+      - provisioned_throughput_in_mibps = 0 -> null
+      - size_in_bytes                   = [
+          - {
+              - value             = 6144
+              - value_in_ia       = 0
+              - value_in_standard = 6144
+            },
+        ] -> null
+      - tags                            = {
+          - "Name" = "pqr-clasificador-wa-auth"
+        } -> null
+      - tags_all                        = {
+          - "Name" = "pqr-clasificador-wa-auth"
+        } -> null
+      - throughput_mode                 = "bursting" -> null
+        # (3 unchanged attributes hidden)
+
+      - protection {
+          - replication_overwrite = "ENABLED" -> null
+        }
+    }
+
+  # aws_efs_mount_target.wa_auth[0] will be destroyed
+  - resource "aws_efs_mount_target" "wa_auth" {
+      - availability_zone_id   = "use1-az2" -> null
+      - availability_zone_name = "us-east-1a" -> null
+      - dns_name               = "fs-0fb0d483be39acbc7.efs.us-east-1.amazonaws.com" -> null
+      - file_system_arn        = "arn:aws:elasticfilesystem:us-east-1:447958713966:file-system/fs-0fb0d483be39acbc7" -> null
+      - file_system_id         = "fs-0fb0d483be39acbc7" -> null
+      - id                     = "fsmt-03de5273b752bc3bd" -> null
+      - ip_address             = "10.0.10.88" -> null
+      - mount_target_dns_name  = "us-east-1a.fs-0fb0d483be39acbc7.efs.us-east-1.amazonaws.com" -> null
+      - network_interface_id   = "eni-0520150f5a667d9c4" -> null
+      - owner_id               = "447958713966" -> null
+      - security_groups        = [
+          - "sg-00e90213a42a75adb",
+        ] -> null
+      - subnet_id              = "subnet-0bd21b78f667e797a" -> null
+    }
+
+  # aws_efs_mount_target.wa_auth[1] will be destroyed
+  - resource "aws_efs_mount_target" "wa_auth" {
+      - availability_zone_id   = "use1-az4" -> null
+      - availability_zone_name = "us-east-1b" -> null
+      - dns_name               = "fs-0fb0d483be39acbc7.efs.us-east-1.amazonaws.com" -> null
+      - file_system_arn        = "arn:aws:elasticfilesystem:us-east-1:447958713966:file-system/fs-0fb0d483be39acbc7" -> null
+      - file_system_id         = "fs-0fb0d483be39acbc7" -> null
+      - id                     = "fsmt-06114c5d096752a00" -> null
+      - ip_address             = "10.0.11.208" -> null
+      - mount_target_dns_name  = "us-east-1b.fs-0fb0d483be39acbc7.efs.us-east-1.amazonaws.com" -> null
+      - network_interface_id   = "eni-09a2250d134e70237" -> null
+      - owner_id               = "447958713966" -> null
+      - security_groups        = [
+          - "sg-00e90213a42a75adb",
+        ] -> null
+      - subnet_id              = "subnet-0167e8bca2bca79bd" -> null
+    }
+
+  # aws_eip.nat will be destroyed
+  - resource "aws_eip" "nat" {
+      - allocation_id            = "eipalloc-04d2735f559102a55" -> null
+      - arn                      = "arn:aws:ec2:us-east-1:447958713966:elastic-ip/eipalloc-04d2735f559102a55" -> null
+      - association_id           = "eipassoc-0621bc202dbfbd471" -> null
+      - domain                   = "vpc" -> null
+      - id                       = "eipalloc-04d2735f559102a55" -> null
+      - network_border_group     = "us-east-1" -> null
+      - network_interface        = "eni-0001c90d94add868d" -> null
+      - private_dns              = "ip-10-0-0-137.ec2.internal" -> null
+      - private_ip               = "10.0.0.137" -> null
+      - public_dns               = "ec2-3-208-192-124.compute-1.amazonaws.com" -> null
+      - public_ip                = "3.208.192.124" -> null
+      - public_ipv4_pool         = "amazon" -> null
+      - tags                     = {
+          - "Name" = "pqr-clasificador-nat-eip"
+        } -> null
+      - tags_all                 = {
+          - "Name" = "pqr-clasificador-nat-eip"
+        } -> null
+      - vpc                      = true -> null
+        # (5 unchanged attributes hidden)
+    }
+
+  # aws_internet_gateway.main will be destroyed
+  - resource "aws_internet_gateway" "main" {
+      - arn      = "arn:aws:ec2:us-east-1:447958713966:internet-gateway/igw-040da9514410ba9d4" -> null
+      - id       = "igw-040da9514410ba9d4" -> null
+      - owner_id = "447958713966" -> null
+      - tags     = {
+          - "Name" = "pqr-clasificador-igw"
+        } -> null
+      - tags_all = {
+          - "Name" = "pqr-clasificador-igw"
+        } -> null
+      - vpc_id   = "vpc-0a8eda73acd7ac31d" -> null
+    }
+
+  # aws_lb.main will be destroyed
+  - resource "aws_lb" "main" {
+      - arn                                                          = "arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a" -> null
+      - arn_suffix                                                   = "app/pqr-clasificador-v2-alb/195b7a45f1d2641a" -> null
+      - client_keep_alive                                            = 3600 -> null
+      - desync_mitigation_mode                                       = "defensive" -> null
+      - dns_name                                                     = "pqr-clasificador-v2-alb-1388817553.us-east-1.elb.amazonaws.com" -> null
+      - drop_invalid_header_fields                                   = false -> null
+      - enable_cross_zone_load_balancing                             = true -> null
+      - enable_deletion_protection                                   = false -> null
+      - enable_http2                                                 = true -> null
+      - enable_tls_version_and_cipher_suite_headers                  = false -> null
+      - enable_waf_fail_open                                         = false -> null
+      - enable_xff_client_port                                       = false -> null
+      - enable_zonal_shift                                           = false -> null
+      - id                                                           = "arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a" -> null
+      - idle_timeout                                                 = 60 -> null
+      - internal                                                     = false -> null
+      - ip_address_type                                              = "ipv4" -> null
+      - load_balancer_type                                           = "application" -> null
+      - name                                                         = "pqr-clasificador-v2-alb" -> null
+      - preserve_host_header                                         = false -> null
+      - security_groups                                              = [
+          - "sg-04f30210aaa56dbb1",
+        ] -> null
+      - subnets                                                      = [
+          - "subnet-0ad20253a2be3a7f8",
+          - "subnet-0d79eb32a0266c02c",
+        ] -> null
+      - tags                                                         = {
+          - "Name" = "pqr-clasificador-v2-alb"
+        } -> null
+      - tags_all                                                     = {
+          - "Name" = "pqr-clasificador-v2-alb"
+        } -> null
+      - vpc_id                                                       = "vpc-0a8eda73acd7ac31d" -> null
+      - xff_header_processing_mode                                   = "append" -> null
+      - zone_id                                                      = "Z35SXDOTRQ7X7K" -> null
+        # (3 unchanged attributes hidden)
+
+      - access_logs {
+          - enabled = false -> null
+            # (2 unchanged attributes hidden)
+        }
+
+      - connection_logs {
+          - enabled = false -> null
+            # (2 unchanged attributes hidden)
+        }
+
+      - subnet_mapping {
+          - subnet_id            = "subnet-0ad20253a2be3a7f8" -> null
+            # (4 unchanged attributes hidden)
+        }
+      - subnet_mapping {
+          - subnet_id            = "subnet-0d79eb32a0266c02c" -> null
+            # (4 unchanged attributes hidden)
+        }
+    }
+
+  # aws_lb_listener.http will be destroyed
+  - resource "aws_lb_listener" "http" {
+      - arn                                                                 = "arn:aws:elasticloadbalancing:us-east-1:447958713966:listener/app/pqr-clasificador-v2-alb/195b7a45f1d2641a/62b825923ed3cdf4" -> null
+      - id                                                                  = "arn:aws:elasticloadbalancing:us-east-1:447958713966:listener/app/pqr-clasificador-v2-alb/195b7a45f1d2641a/62b825923ed3cdf4" -> null
+      - load_balancer_arn                                                   = "arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a" -> null
+      - port                                                                = 80 -> null
+      - protocol                                                            = "HTTP" -> null
+      - routing_http_response_server_enabled                                = true -> null
+      - tags                                                                = {} -> null
+      - tags_all                                                            = {} -> null
+        # (11 unchanged attributes hidden)
+
+      - default_action {
+          - order            = 1 -> null
+          - target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4" -> null
+          - type             = "forward" -> null
+        }
+    }
+
+  # aws_lb_target_group.backend will be destroyed
+  - resource "aws_lb_target_group" "backend" {
+      - arn                                = "arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4" -> null
+      - arn_suffix                         = "targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4" -> null
+      - deregistration_delay               = "300" -> null
+      - id                                 = "arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4" -> null
+      - ip_address_type                    = "ipv4" -> null
+      - lambda_multi_value_headers_enabled = false -> null
+      - load_balancer_arns                 = [
+          - "arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a",
+        ] -> null
+      - load_balancing_algorithm_type      = "round_robin" -> null
+      - load_balancing_anomaly_mitigation  = "off" -> null
+      - load_balancing_cross_zone_enabled  = "use_load_balancer_configuration" -> null
+      - name                               = "pqr-clasificador-backend-tg" -> null
+      - port                               = 3001 -> null
+      - protocol                           = "HTTP" -> null
+      - protocol_version                   = "HTTP1" -> null
+      - proxy_protocol_v2                  = false -> null
+      - slow_start                         = 0 -> null
+      - tags                               = {
+          - "Name" = "pqr-clasificador-backend-tg"
+        } -> null
+      - tags_all                           = {
+          - "Name" = "pqr-clasificador-backend-tg"
+        } -> null
+      - target_type                        = "ip" -> null
+      - vpc_id                             = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+
+      - health_check {
+          - enabled             = true -> null
+          - healthy_threshold   = 2 -> null
+          - interval            = 30 -> null
+          - matcher             = "200" -> null
+          - path                = "/" -> null
+          - port                = "traffic-port" -> null
+          - protocol            = "HTTP" -> null
+          - timeout             = 10 -> null
+          - unhealthy_threshold = 5 -> null
+        }
+
+      - stickiness {
+          - cookie_duration = 86400 -> null
+          - enabled         = false -> null
+          - type            = "lb_cookie" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - target_failover {}
+
+      - target_group_health {
+          - dns_failover {
+              - minimum_healthy_targets_count      = "1" -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+          - unhealthy_state_routing {
+              - minimum_healthy_targets_count      = 1 -> null
+              - minimum_healthy_targets_percentage = "off" -> null
+            }
+        }
+
+      - target_health_state {}
+    }
+
+  # aws_nat_gateway.main will be destroyed
+  - resource "aws_nat_gateway" "main" {
+      - allocation_id                      = "eipalloc-04d2735f559102a55" -> null
+      - association_id                     = "eipassoc-0621bc202dbfbd471" -> null
+      - connectivity_type                  = "public" -> null
+      - id                                 = "nat-018c58ad5b0fae923" -> null
+      - network_interface_id               = "eni-0001c90d94add868d" -> null
+      - private_ip                         = "10.0.0.137" -> null
+      - public_ip                          = "3.208.192.124" -> null
+      - secondary_allocation_ids           = [] -> null
+      - secondary_private_ip_address_count = 0 -> null
+      - secondary_private_ip_addresses     = [] -> null
+      - subnet_id                          = "subnet-0ad20253a2be3a7f8" -> null
+      - tags                               = {
+          - "Name" = "pqr-clasificador-nat"
+        } -> null
+      - tags_all                           = {
+          - "Name" = "pqr-clasificador-nat"
+        } -> null
+    }
+
+  # aws_route_table.private will be destroyed
+  - resource "aws_route_table" "private" {
+      - arn              = "arn:aws:ec2:us-east-1:447958713966:route-table/rtb-022034d5d36b4854d" -> null
+      - id               = "rtb-022034d5d36b4854d" -> null
+      - owner_id         = "447958713966" -> null
+      - propagating_vgws = [] -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - nat_gateway_id             = "nat-018c58ad5b0fae923"
+                # (11 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "pqr-clasificador-private-rt"
+        } -> null
+      - tags_all         = {
+          - "Name" = "pqr-clasificador-private-rt"
+        } -> null
+      - vpc_id           = "vpc-0a8eda73acd7ac31d" -> null
+    }
+
+  # aws_route_table.public will be destroyed
+  - resource "aws_route_table" "public" {
+      - arn              = "arn:aws:ec2:us-east-1:447958713966:route-table/rtb-0990111e9e89682e0" -> null
+      - id               = "rtb-0990111e9e89682e0" -> null
+      - owner_id         = "447958713966" -> null
+      - propagating_vgws = [] -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - gateway_id                 = "igw-040da9514410ba9d4"
+                # (11 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "pqr-clasificador-public-rt"
+        } -> null
+      - tags_all         = {
+          - "Name" = "pqr-clasificador-public-rt"
+        } -> null
+      - vpc_id           = "vpc-0a8eda73acd7ac31d" -> null
+    }
+
+  # aws_route_table_association.private[0] will be destroyed
+  - resource "aws_route_table_association" "private" {
+      - id             = "rtbassoc-08b24ea1750dab4b7" -> null
+      - route_table_id = "rtb-022034d5d36b4854d" -> null
+      - subnet_id      = "subnet-0bd21b78f667e797a" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_route_table_association.private[1] will be destroyed
+  - resource "aws_route_table_association" "private" {
+      - id             = "rtbassoc-06f307d18b234829f" -> null
+      - route_table_id = "rtb-022034d5d36b4854d" -> null
+      - subnet_id      = "subnet-0167e8bca2bca79bd" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_route_table_association.public[0] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-0ec9b7f319824bdb0" -> null
+      - route_table_id = "rtb-0990111e9e89682e0" -> null
+      - subnet_id      = "subnet-0ad20253a2be3a7f8" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_route_table_association.public[1] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-0ef99d5aabc69ab10" -> null
+      - route_table_id = "rtb-0990111e9e89682e0" -> null
+      - subnet_id      = "subnet-0d79eb32a0266c02c" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_s3_bucket.frontend will be destroyed
+  - resource "aws_s3_bucket" "frontend" {
+      - arn                         = "arn:aws:s3:::pqr-clasificador-frontend-447958713966" -> null
+      - bucket                      = "pqr-clasificador-frontend-447958713966" -> null
+      - bucket_domain_name          = "pqr-clasificador-frontend-447958713966.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "pqr-clasificador-frontend-447958713966.s3.us-east-1.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "pqr-clasificador-frontend-447958713966" -> null
+      - object_lock_enabled         = false -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "Name" = "pqr-clasificador-frontend"
+        } -> null
+      - tags_all                    = {
+          - "Name" = "pqr-clasificador-frontend"
+        } -> null
+        # (3 unchanged attributes hidden)
+
+      - grant {
+          - id          = "ead74c81ffc883d16beeafae8cbf510bdbc20322faf67bfafd7e7a7a712f7e5d" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.frontend will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "frontend" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = false -> null
+      - bucket                  = "pqr-clasificador-frontend-447958713966" -> null
+      - id                      = "pqr-clasificador-frontend-447958713966" -> null
+      - ignore_public_acls      = true -> null
+      - restrict_public_buckets = false -> null
+    }
+
+  # aws_security_group.alb will be destroyed
+  - resource "aws_security_group" "alb" {
+      - arn                    = "arn:aws:ec2:us-east-1:447958713966:security-group/sg-04f30210aaa56dbb1" -> null
+      - description            = "Trafico HTTP entrante hacia el ALB" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-04f30210aaa56dbb1" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "HTTP desde internet"
+              - from_port        = 80
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 80
+            },
+        ] -> null
+      - name                   = "pqr-clasificador-alb-sg" -> null
+      - owner_id               = "447958713966" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pqr-clasificador-alb-sg"
+        } -> null
+      - tags_all               = {
+          - "Name" = "pqr-clasificador-alb-sg"
+        } -> null
+      - vpc_id                 = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_security_group.ecs will be destroyed
+  - resource "aws_security_group" "ecs" {
+      - arn                    = "arn:aws:ec2:us-east-1:447958713966:security-group/sg-0c9e8bc86a96285ac" -> null
+      - description            = "Trafico hacia las tareas de ECS Fargate (backend)" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-0c9e8bc86a96285ac" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "Trafico desde el ALB"
+              - from_port        = 3001
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-04f30210aaa56dbb1",
+                ]
+              - self             = false
+              - to_port          = 3001
+            },
+        ] -> null
+      - name                   = "pqr-clasificador-ecs-sg" -> null
+      - owner_id               = "447958713966" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pqr-clasificador-ecs-sg"
+        } -> null
+      - tags_all               = {
+          - "Name" = "pqr-clasificador-ecs-sg"
+        } -> null
+      - vpc_id                 = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_security_group.efs will be destroyed
+  - resource "aws_security_group" "efs" {
+      - arn                    = "arn:aws:ec2:us-east-1:447958713966:security-group/sg-00e90213a42a75adb" -> null
+      - description            = "Acceso NFS desde las tareas de ECS (sesion de WhatsApp persistente)" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-00e90213a42a75adb" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "NFS desde ECS"
+              - from_port        = 2049
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-0c9e8bc86a96285ac",
+                ]
+              - self             = false
+              - to_port          = 2049
+            },
+        ] -> null
+      - name                   = "pqr-clasificador-efs-sg" -> null
+      - owner_id               = "447958713966" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pqr-clasificador-efs-sg"
+        } -> null
+      - tags_all               = {
+          - "Name" = "pqr-clasificador-efs-sg"
+        } -> null
+      - vpc_id                 = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_security_group.rds will be destroyed
+  - resource "aws_security_group" "rds" {
+      - arn                    = "arn:aws:ec2:us-east-1:447958713966:security-group/sg-0558482cfb618b3ac" -> null
+      - description            = "Acceso a PostgreSQL solo desde las tareas de ECS" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ] -> null
+      - id                     = "sg-0558482cfb618b3ac" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = []
+              - description      = "PostgreSQL desde ECS"
+              - from_port        = 5432
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = [
+                  - "sg-0c9e8bc86a96285ac",
+                ]
+              - self             = false
+              - to_port          = 5432
+            },
+        ] -> null
+      - name                   = "pqr-clasificador-rds-sg" -> null
+      - owner_id               = "447958713966" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pqr-clasificador-rds-sg"
+        } -> null
+      - tags_all               = {
+          - "Name" = "pqr-clasificador-rds-sg"
+        } -> null
+      - vpc_id                 = "vpc-0a8eda73acd7ac31d" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_ssm_parameter.admin_email will be destroyed
+  - resource "aws_ssm_parameter" "admin_email" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/ADMIN_EMAIL" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/ADMIN_EMAIL" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/ADMIN_EMAIL" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.admin_password will be destroyed
+  - resource "aws_ssm_parameter" "admin_password" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/ADMIN_PASSWORD" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/ADMIN_PASSWORD" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/ADMIN_PASSWORD" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.database_url will be destroyed
+  - resource "aws_ssm_parameter" "database_url" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/DATABASE_URL" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/DATABASE_URL" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/DATABASE_URL" -> null
+      - tags            = {
+          - "Name" = "pqr-clasificador-database-url"
+        } -> null
+      - tags_all        = {
+          - "Name" = "pqr-clasificador-database-url"
+        } -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.email_pass will be destroyed
+  - resource "aws_ssm_parameter" "email_pass" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/EMAIL_PASS" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/EMAIL_PASS" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/EMAIL_PASS" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.email_user will be destroyed
+  - resource "aws_ssm_parameter" "email_user" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/EMAIL_USER" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/EMAIL_USER" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/EMAIL_USER" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.jwt_secret will be destroyed
+  - resource "aws_ssm_parameter" "jwt_secret" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/JWT_SECRET" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/JWT_SECRET" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/JWT_SECRET" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.openrouter_api_key will be destroyed
+  - resource "aws_ssm_parameter" "openrouter_api_key" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/OPENROUTER_API_KEY" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/OPENROUTER_API_KEY" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/OPENROUTER_API_KEY" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_ssm_parameter.telegram_bot_token will be destroyed
+  - resource "aws_ssm_parameter" "telegram_bot_token" {
+      - arn             = "arn:aws:ssm:us-east-1:447958713966:parameter/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN" -> null
+      - data_type       = "text" -> null
+      - id              = "/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN" -> null
+      - key_id          = "alias/aws/ssm" -> null
+      - name            = "/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN" -> null
+      - tags            = {} -> null
+      - tags_all        = {} -> null
+      - tier            = "Standard" -> null
+      - type            = "SecureString" -> null
+      - value           = (sensitive value) -> null
+      - value_wo        = (write-only attribute) -> null
+      - version         = 1 -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # aws_subnet.private[0] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:us-east-1:447958713966:subnet/subnet-0bd21b78f667e797a" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az2" -> null
+      - cidr_block                                     = "10.0.10.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0bd21b78f667e797a" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "447958713966" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "pqr-clasificador-private-us-east-1a"
+        } -> null
+      - tags_all                                       = {
+          - "Name" = "pqr-clasificador-private-us-east-1a"
+        } -> null
+      - vpc_id                                         = "vpc-0a8eda73acd7ac31d" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.private[1] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:us-east-1:447958713966:subnet/subnet-0167e8bca2bca79bd" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1b" -> null
+      - availability_zone_id                           = "use1-az4" -> null
+      - cidr_block                                     = "10.0.11.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0167e8bca2bca79bd" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "447958713966" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "pqr-clasificador-private-us-east-1b"
+        } -> null
+      - tags_all                                       = {
+          - "Name" = "pqr-clasificador-private-us-east-1b"
+        } -> null
+      - vpc_id                                         = "vpc-0a8eda73acd7ac31d" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[0] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:us-east-1:447958713966:subnet/subnet-0ad20253a2be3a7f8" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1a" -> null
+      - availability_zone_id                           = "use1-az2" -> null
+      - cidr_block                                     = "10.0.0.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0ad20253a2be3a7f8" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "447958713966" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "pqr-clasificador-public-us-east-1a"
+        } -> null
+      - tags_all                                       = {
+          - "Name" = "pqr-clasificador-public-us-east-1a"
+        } -> null
+      - vpc_id                                         = "vpc-0a8eda73acd7ac31d" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_subnet.public[1] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:us-east-1:447958713966:subnet/subnet-0d79eb32a0266c02c" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "us-east-1b" -> null
+      - availability_zone_id                           = "use1-az4" -> null
+      - cidr_block                                     = "10.0.1.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-0d79eb32a0266c02c" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "447958713966" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - tags                                           = {
+          - "Name" = "pqr-clasificador-public-us-east-1b"
+        } -> null
+      - tags_all                                       = {
+          - "Name" = "pqr-clasificador-public-us-east-1b"
+        } -> null
+      - vpc_id                                         = "vpc-0a8eda73acd7ac31d" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_vpc.main will be destroyed
+  - resource "aws_vpc" "main" {
+      - arn                                  = "arn:aws:ec2:us-east-1:447958713966:vpc/vpc-0a8eda73acd7ac31d" -> null
+      - assign_generated_ipv6_cidr_block     = false -> null
+      - cidr_block                           = "10.0.0.0/16" -> null
+      - default_network_acl_id               = "acl-01c04c63e31618716" -> null
+      - default_route_table_id               = "rtb-0b0609a875a4f9019" -> null
+      - default_security_group_id            = "sg-0f3e507ca60ec9ce2" -> null
+      - dhcp_options_id                      = "dopt-06475660f5889da2a" -> null
+      - enable_dns_hostnames                 = true -> null
+      - enable_dns_support                   = true -> null
+      - enable_network_address_usage_metrics = false -> null
+      - id                                   = "vpc-0a8eda73acd7ac31d" -> null
+      - instance_tenancy                     = "default" -> null
+      - ipv6_netmask_length                  = 0 -> null
+      - main_route_table_id                  = "rtb-0b0609a875a4f9019" -> null
+      - owner_id                             = "447958713966" -> null
+      - tags                                 = {
+          - "Name" = "pqr-clasificador-vpc"
+        } -> null
+      - tags_all                             = {
+          - "Name" = "pqr-clasificador-vpc"
+        } -> null
+        # (4 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 41 to destroy.
+
+Changes to Outputs:
+  - alb_dns_name         = "pqr-clasificador-v2-alb-1388817553.us-east-1.elb.amazonaws.com" -> null
+  - ecr_repository_url   = "447958713966.dkr.ecr.us-east-1.amazonaws.com/pqr-clasificador-backend" -> null
+  - ecs_cluster_name     = "pqr-clasificador-v2-cluster" -> null
+  - ecs_service_name     = "pqr-clasificador-backend" -> null
+  - frontend_bucket_name = "pqr-clasificador-frontend-447958713966" -> null
+  - rds_endpoint         = "pqr-clasificador-v2-db.cqcd3ryswf4g.us-east-1.rds.amazonaws.com" -> null
+aws_ecr_lifecycle_policy.backend: Destroying... [id=pqr-clasificador-backend]
+aws_route_table_association.private[1]: Destroying... [id=rtbassoc-06f307d18b234829f]
+aws_route_table_association.public[0]: Destroying... [id=rtbassoc-0ec9b7f319824bdb0]
+aws_ssm_parameter.jwt_secret: Destroying... [id=/pqr-clasificador/prod/JWT_SECRET]
+aws_ssm_parameter.admin_email: Destroying... [id=/pqr-clasificador/prod/ADMIN_EMAIL]
+aws_ssm_parameter.database_url: Destroying... [id=/pqr-clasificador/prod/DATABASE_URL]
+aws_ssm_parameter.openrouter_api_key: Destroying... [id=/pqr-clasificador/prod/OPENROUTER_API_KEY]
+aws_cloudwatch_log_group.backend: Destroying... [id=/ecs/pqr-clasificador-backend]
+aws_ecs_cluster.main: Destroying... [id=arn:aws:ecs:us-east-1:447958713966:cluster/pqr-clasificador-v2-cluster]
+aws_lb_listener.http: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:listener/app/pqr-clasificador-v2-alb/195b7a45f1d2641a/62b825923ed3cdf4]
+aws_lb_listener.http: Destruction complete after 0s
+aws_efs_access_point.wa_auth: Destroying... [id=fsap-0aaa1847976a664f7]
+aws_ssm_parameter.openrouter_api_key: Destruction complete after 0s
+aws_ssm_parameter.admin_email: Destruction complete after 0s
+aws_ssm_parameter.admin_password: Destroying... [id=/pqr-clasificador/prod/ADMIN_PASSWORD]
+aws_route_table_association.public[1]: Destroying... [id=rtbassoc-0ef99d5aabc69ab10]
+aws_cloudwatch_log_group.backend: Destruction complete after 0s
+aws_ssm_parameter.jwt_secret: Destruction complete after 0s
+aws_ecr_lifecycle_policy.backend: Destruction complete after 0s
+aws_ssm_parameter.database_url: Destruction complete after 0s
+aws_s3_bucket_public_access_block.frontend: Destroying... [id=pqr-clasificador-frontend-447958713966]
+aws_efs_mount_target.wa_auth[0]: Destroying... [id=fsmt-03de5273b752bc3bd]
+aws_route_table_association.private[0]: Destroying... [id=rtbassoc-08b24ea1750dab4b7]
+aws_ssm_parameter.telegram_bot_token: Destroying... [id=/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN]
+aws_ssm_parameter.admin_password: Destruction complete after 0s
+aws_ssm_parameter.email_pass: Destroying... [id=/pqr-clasificador/prod/EMAIL_PASS]
+aws_ecs_cluster.main: Destruction complete after 0s
+aws_efs_mount_target.wa_auth[1]: Destroying... [id=fsmt-06114c5d096752a00]
+aws_ssm_parameter.telegram_bot_token: Destruction complete after 0s
+aws_ssm_parameter.email_user: Destroying... [id=/pqr-clasificador/prod/EMAIL_USER]
+aws_ssm_parameter.email_pass: Destruction complete after 1s
+aws_lb_target_group.backend: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/5d26d970e62842d4]
+aws_ssm_parameter.email_user: Destruction complete after 0s
+aws_lb_target_group.backend: Destruction complete after 0s
+aws_route_table_association.public[0]: Destruction complete after 1s
+aws_lb.main: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:loadbalancer/app/pqr-clasificador-v2-alb/195b7a45f1d2641a]
+aws_ecr_repository.backend: Destroying... [id=pqr-clasificador-backend]
+aws_db_instance.main: Destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34]
+aws_route_table_association.private[1]: Destruction complete after 1s
+aws_route_table_association.public[1]: Destruction complete after 1s
+aws_route_table.public: Destroying... [id=rtb-0990111e9e89682e0]
+aws_route_table_association.private[0]: Destruction complete after 1s
+aws_route_table.private: Destroying... [id=rtb-022034d5d36b4854d]
+aws_ecr_repository.backend: Destruction complete after 0s
+aws_s3_bucket_public_access_block.frontend: Destruction complete after 2s
+aws_s3_bucket.frontend: Destroying... [id=pqr-clasificador-frontend-447958713966]
+aws_route_table.public: Destruction complete after 1s
+aws_route_table.private: Destruction complete after 1s
+aws_nat_gateway.main: Destroying... [id=nat-018c58ad5b0fae923]
+aws_s3_bucket.frontend: Destruction complete after 0s
+aws_efs_access_point.wa_auth: Destruction complete after 3s
+aws_efs_mount_target.wa_auth[0]: Still destroying... [id=fsmt-03de5273b752bc3bd, 00m10s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still destroying... [id=fsmt-06114c5d096752a00, 00m10s elapsed]
+aws_lb.main: Still destroying... [id=arn:aws:elasticloadbalancing:us-east-1:...r-clasificador-v2-alb/195b7a45f1d2641a, 00m10s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 00m10s elapsed]
+aws_nat_gateway.main: Still destroying... [id=nat-018c58ad5b0fae923, 00m10s elapsed]
+aws_lb.main: Destruction complete after 17s
+aws_efs_mount_target.wa_auth[0]: Still destroying... [id=fsmt-03de5273b752bc3bd, 00m20s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still destroying... [id=fsmt-06114c5d096752a00, 00m20s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 00m20s elapsed]
+aws_nat_gateway.main: Still destroying... [id=nat-018c58ad5b0fae923, 00m20s elapsed]
+aws_efs_mount_target.wa_auth[0]: Destruction complete after 22s
+aws_efs_mount_target.wa_auth[1]: Destruction complete after 22s
+aws_efs_file_system.wa_auth: Destroying... [id=fs-0fb0d483be39acbc7]
+aws_security_group.efs: Destroying... [id=sg-00e90213a42a75adb]
+aws_security_group.efs: Destruction complete after 1s
+aws_efs_file_system.wa_auth: Destruction complete after 3s
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 00m30s elapsed]
+aws_nat_gateway.main: Still destroying... [id=nat-018c58ad5b0fae923, 00m30s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 00m40s elapsed]
+aws_nat_gateway.main: Still destroying... [id=nat-018c58ad5b0fae923, 00m40s elapsed]
+aws_nat_gateway.main: Destruction complete after 40s
+aws_internet_gateway.main: Destroying... [id=igw-040da9514410ba9d4]
+aws_eip.nat: Destroying... [id=eipalloc-04d2735f559102a55]
+aws_subnet.public[1]: Destroying... [id=subnet-0d79eb32a0266c02c]
+aws_subnet.public[0]: Destroying... [id=subnet-0ad20253a2be3a7f8]
+aws_internet_gateway.main: Destruction complete after 1s
+aws_subnet.public[1]: Destruction complete after 2s
+aws_subnet.public[0]: Destruction complete after 2s
+aws_eip.nat: Destruction complete after 2s
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 00m50s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m00s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m10s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m20s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m30s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m40s elapsed]
+aws_db_instance.main: Still destroying... [id=db-7FMWY2YC3RSYPXNNOF4MTDLK34, 01m50s elapsed]
+aws_db_instance.main: Destruction complete after 1m52s
+aws_db_subnet_group.main: Destroying... [id=pqr-clasificador-v2-db-subnet-group]
+aws_security_group.rds: Destroying... [id=sg-0558482cfb618b3ac]
+aws_db_subnet_group.main: Destruction complete after 0s
+aws_subnet.private[1]: Destroying... [id=subnet-0167e8bca2bca79bd]
+aws_subnet.private[0]: Destroying... [id=subnet-0bd21b78f667e797a]
+aws_security_group.rds: Destruction complete after 1s
+aws_security_group.ecs: Destroying... [id=sg-0c9e8bc86a96285ac]
+aws_subnet.private[0]: Destruction complete after 1s
+aws_subnet.private[1]: Destruction complete after 1s
+aws_security_group.ecs: Destruction complete after 1s
+aws_security_group.alb: Destroying... [id=sg-04f30210aaa56dbb1]
+aws_security_group.alb: Destruction complete after 1s
+aws_vpc.main: Destroying... [id=vpc-0a8eda73acd7ac31d]
+aws_vpc.main: Destruction complete after 0s
+
+Destroy complete! Resources: 41 destroyed.

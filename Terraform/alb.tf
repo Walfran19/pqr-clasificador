@@ -1,18 +1,18 @@
 resource "aws_lb" "main" {
-  name               = "${var.project_name}-alb"
+  name               = "${var.project_name}-v2-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
 
   tags = {
-    Name = "${var.project_name}-alb"
+    Name = "${var.project_name}-v2-alb"
   }
 }
 
-resource "aws_lb_target_group" "backend" {
-  name        = "${var.project_name}-backend-tg"
-  port        = var.container_port
+resource "aws_lb_target_group" "frontend" {
+  name        = "${var.project_name}-v2-frontend-tg"
+  port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
@@ -27,7 +27,7 @@ resource "aws_lb_target_group" "backend" {
   }
 
   tags = {
-    Name = "${var.project_name}-backend-tg"
+    Name = "${var.project_name}-v2-frontend-tg"
   }
 }
 
@@ -41,6 +41,6 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = aws_lb_target_group.frontend.arn
   }
 }

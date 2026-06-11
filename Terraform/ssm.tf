@@ -1,5 +1,6 @@
 # Secretos y configuración sensible de la aplicación, leídos por la tarea de
-# ECS al arrancar (ver iam.tf para los permisos de lectura del execution role).
+# ECS al arrancar (el execution role "LabRole" ya tiene permisos de lectura,
+# ver iam.tf).
 
 locals {
   database_url = "postgresql://${var.db_username}:${var.db_password}@${aws_db_instance.main.address}:5432/${var.db_name}"

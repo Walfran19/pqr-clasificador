@@ -1,0 +1,1401 @@
+data.aws_availability_zones.available: Reading...
+data.aws_iam_role.lab_role: Reading...
+data.aws_caller_identity.current: Reading...
+data.aws_caller_identity.current: Read complete after 0s [id=447958713966]
+data.aws_availability_zones.available: Read complete after 0s [id=us-east-1]
+data.aws_iam_role.lab_role: Read complete after 0s [id=LabRole]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.frontend will be created
+  + resource "aws_cloudfront_distribution" "frontend" {
+      + arn                             = (known after apply)
+      + caller_reference                = (known after apply)
+      + comment                         = "pqr-clasificador frontend"
+      + continuous_deployment_policy_id = (known after apply)
+      + default_root_object             = "index.html"
+      + domain_name                     = (known after apply)
+      + enabled                         = true
+      + etag                            = (known after apply)
+      + hosted_zone_id                  = (known after apply)
+      + http_version                    = "http2"
+      + id                              = (known after apply)
+      + in_progress_validation_batches  = (known after apply)
+      + is_ipv6_enabled                 = false
+      + last_modified_time              = (known after apply)
+      + price_class                     = "PriceClass_All"
+      + retain_on_delete                = false
+      + staging                         = false
+      + status                          = (known after apply)
+      + tags                            = {
+          + "Name" = "pqr-clasificador-frontend-cdn"
+        }
+      + tags_all                        = {
+          + "Name" = "pqr-clasificador-frontend-cdn"
+        }
+      + trusted_key_groups              = (known after apply)
+      + trusted_signers                 = (known after apply)
+      + wait_for_deployment             = true
+
+      + custom_error_response {
+          + error_code         = 403
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+      + custom_error_response {
+          + error_code         = 404
+          + response_code      = 200
+          + response_page_path = "/index.html"
+        }
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+            ]
+          + cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = true
+          + default_ttl            = (known after apply)
+          + max_ttl                = (known after apply)
+          + min_ttl                = 0
+          + target_origin_id       = "s3-frontend"
+          + trusted_key_groups     = (known after apply)
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "redirect-to-https"
+
+          + grpc_config (known after apply)
+        }
+
+      + ordered_cache_behavior {
+          + allowed_methods          = [
+              + "DELETE",
+              + "GET",
+              + "HEAD",
+              + "OPTIONS",
+              + "PATCH",
+              + "POST",
+              + "PUT",
+            ]
+          + cache_policy_id          = "4135ea3d-c38f-4be3-a159-ca0a21b26898"
+          + cached_methods           = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress                 = false
+          + default_ttl              = (known after apply)
+          + max_ttl                  = (known after apply)
+          + min_ttl                  = 0
+          + origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa49d3"
+          + path_pattern             = "/api/*"
+          + target_origin_id         = "alb-backend"
+          + viewer_protocol_policy   = "redirect-to-https"
+
+          + grpc_config (known after apply)
+        }
+
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = (known after apply)
+          + origin_id                = "alb-backend"
+            # (2 unchanged attributes hidden)
+
+          + custom_origin_config {
+              + http_port                = 80
+              + https_port               = 443
+              + origin_keepalive_timeout = 5
+              + origin_protocol_policy   = "http-only"
+              + origin_read_timeout      = 30
+              + origin_ssl_protocols     = [
+                  + "TLSv1.2",
+                ]
+            }
+        }
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = (known after apply)
+          + origin_access_control_id = (known after apply)
+          + origin_id                = "s3-frontend"
+            # (1 unchanged attribute hidden)
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = (known after apply)
+              + restriction_type = "none"
+            }
+        }
+
+      + viewer_certificate {
+          + cloudfront_default_certificate = true
+          + minimum_protocol_version       = "TLSv1"
+        }
+    }
+
+  # aws_cloudfront_origin_access_control.frontend will be created
+  + resource "aws_cloudfront_origin_access_control" "frontend" {
+      + arn                               = (known after apply)
+      + description                       = "Managed by Terraform"
+      + etag                              = (known after apply)
+      + id                                = (known after apply)
+      + name                              = "pqr-clasificador-frontend-oac"
+      + origin_access_control_origin_type = "s3"
+      + signing_behavior                  = "always"
+      + signing_protocol                  = "sigv4"
+    }
+
+  # aws_cloudwatch_log_group.backend will be created
+  + resource "aws_cloudwatch_log_group" "backend" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/pqr-clasificador-backend"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags_all          = (known after apply)
+    }
+
+  # aws_db_instance.main will be created
+  + resource "aws_db_instance" "main" {
+      + address                               = (known after apply)
+      + allocated_storage                     = 20
+      + apply_immediately                     = false
+      + arn                                   = (known after apply)
+      + auto_minor_version_upgrade            = true
+      + availability_zone                     = (known after apply)
+      + backup_retention_period               = 7
+      + backup_target                         = (known after apply)
+      + backup_window                         = (known after apply)
+      + ca_cert_identifier                    = (known after apply)
+      + character_set_name                    = (known after apply)
+      + copy_tags_to_snapshot                 = false
+      + database_insights_mode                = (known after apply)
+      + db_name                               = "pqr"
+      + db_subnet_group_name                  = "pqr-clasificador-db-subnet-group"
+      + dedicated_log_volume                  = false
+      + delete_automated_backups              = true
+      + deletion_protection                   = false
+      + domain_fqdn                           = (known after apply)
+      + endpoint                              = (known after apply)
+      + engine                                = "postgres"
+      + engine_lifecycle_support              = (known after apply)
+      + engine_version                        = "16"
+      + engine_version_actual                 = (known after apply)
+      + hosted_zone_id                        = (known after apply)
+      + id                                    = (known after apply)
+      + identifier                            = "pqr-clasificador-db"
+      + identifier_prefix                     = (known after apply)
+      + instance_class                        = "db.t4g.micro"
+      + iops                                  = (known after apply)
+      + kms_key_id                            = (known after apply)
+      + latest_restorable_time                = (known after apply)
+      + license_model                         = (known after apply)
+      + listener_endpoint                     = (known after apply)
+      + maintenance_window                    = (known after apply)
+      + master_user_secret                    = (known after apply)
+      + master_user_secret_kms_key_id         = (known after apply)
+      + monitoring_interval                   = 0
+      + monitoring_role_arn                   = (known after apply)
+      + multi_az                              = false
+      + nchar_character_set_name              = (known after apply)
+      + network_type                          = (known after apply)
+      + option_group_name                     = (known after apply)
+      + parameter_group_name                  = (known after apply)
+      + password                              = (sensitive value)
+      + password_wo                           = (write-only attribute)
+      + performance_insights_enabled          = false
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = 5432
+      + publicly_accessible                   = false
+      + replica_mode                          = (known after apply)
+      + replicas                              = (known after apply)
+      + resource_id                           = (known after apply)
+      + skip_final_snapshot                   = true
+      + snapshot_identifier                   = (known after apply)
+      + status                                = (known after apply)
+      + storage_encrypted                     = true
+      + storage_throughput                    = (known after apply)
+      + storage_type                          = "gp3"
+      + tags                                  = {
+          + "Name" = "pqr-clasificador-db"
+        }
+      + tags_all                              = {
+          + "Name" = "pqr-clasificador-db"
+        }
+      + timezone                              = (known after apply)
+      + username                              = "pqr_admin"
+      + vpc_security_group_ids                = (known after apply)
+    }
+
+  # aws_db_subnet_group.main will be created
+  + resource "aws_db_subnet_group" "main" {
+      + arn                     = (known after apply)
+      + description             = "Managed by Terraform"
+      + id                      = (known after apply)
+      + name                    = "pqr-clasificador-db-subnet-group"
+      + name_prefix             = (known after apply)
+      + subnet_ids              = (known after apply)
+      + supported_network_types = (known after apply)
+      + tags                    = {
+          + "Name" = "pqr-clasificador-db-subnet-group"
+        }
+      + tags_all                = {
+          + "Name" = "pqr-clasificador-db-subnet-group"
+        }
+      + vpc_id                  = (known after apply)
+    }
+
+  # aws_ecr_lifecycle_policy.backend will be created
+  + resource "aws_ecr_lifecycle_policy" "backend" {
+      + id          = (known after apply)
+      + policy      = jsonencode(
+            {
+              + rules = [
+                  + {
+                      + action       = {
+                          + type = "expire"
+                        }
+                      + description  = "Conservar solo las ultimas 10 imagenes"
+                      + rulePriority = 1
+                      + selection    = {
+                          + countNumber = 10
+                          + countType   = "imageCountMoreThan"
+                          + tagStatus   = "any"
+                        }
+                    },
+                ]
+            }
+        )
+      + registry_id = (known after apply)
+      + repository  = "pqr-clasificador-backend"
+    }
+
+  # aws_ecr_repository.backend will be created
+  + resource "aws_ecr_repository" "backend" {
+      + arn                  = (known after apply)
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "pqr-clasificador-backend"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Name" = "pqr-clasificador-backend"
+        }
+      + tags_all             = {
+          + "Name" = "pqr-clasificador-backend"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecs_cluster.main will be created
+  + resource "aws_ecs_cluster" "main" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + name     = "pqr-clasificador-cluster"
+      + tags_all = (known after apply)
+
+      + setting {
+          + name  = "containerInsights"
+          + value = "disabled"
+        }
+    }
+
+  # aws_ecs_service.backend will be created
+  + resource "aws_ecs_service" "backend" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 0
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "pqr-clasificador-backend"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags_all                           = (known after apply)
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "backend"
+          + container_port   = 3001
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = false
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+    }
+
+  # aws_ecs_task_definition.backend will be created
+  + resource "aws_ecs_task_definition" "backend" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "512"
+      + enable_fault_injection   = (known after apply)
+      + execution_role_arn       = "arn:aws:iam::447958713966:role/LabRole"
+      + family                   = "pqr-clasificador-backend"
+      + id                       = (known after apply)
+      + memory                   = "1024"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Name" = "pqr-clasificador-backend-task"
+        }
+      + tags_all                 = {
+          + "Name" = "pqr-clasificador-backend-task"
+        }
+      + task_role_arn            = "arn:aws:iam::447958713966:role/LabRole"
+      + track_latest             = false
+
+      + volume {
+          + configure_at_launch = (known after apply)
+          + name                = "wa-auth"
+            # (1 unchanged attribute hidden)
+
+          + efs_volume_configuration {
+              + file_system_id          = (known after apply)
+              + root_directory          = "/"
+              + transit_encryption      = "ENABLED"
+              + transit_encryption_port = 0
+
+              + authorization_config {
+                  + access_point_id = (known after apply)
+                  + iam             = "ENABLED"
+                }
+            }
+        }
+    }
+
+  # aws_efs_access_point.wa_auth will be created
+  + resource "aws_efs_access_point" "wa_auth" {
+      + arn             = (known after apply)
+      + file_system_arn = (known after apply)
+      + file_system_id  = (known after apply)
+      + id              = (known after apply)
+      + owner_id        = (known after apply)
+      + tags            = {
+          + "Name" = "pqr-clasificador-wa-auth-ap"
+        }
+      + tags_all        = {
+          + "Name" = "pqr-clasificador-wa-auth-ap"
+        }
+
+      + posix_user {
+          + gid = 1000
+          + uid = 1000
+        }
+
+      + root_directory {
+          + path = "/wa-auth"
+
+          + creation_info {
+              + owner_gid   = 1000
+              + owner_uid   = 1000
+              + permissions = "755"
+            }
+        }
+    }
+
+  # aws_efs_file_system.wa_auth will be created
+  + resource "aws_efs_file_system" "wa_auth" {
+      + arn                     = (known after apply)
+      + availability_zone_id    = (known after apply)
+      + availability_zone_name  = (known after apply)
+      + creation_token          = "pqr-clasificador-wa-auth"
+      + dns_name                = (known after apply)
+      + encrypted               = false
+      + id                      = (known after apply)
+      + kms_key_id              = (known after apply)
+      + name                    = (known after apply)
+      + number_of_mount_targets = (known after apply)
+      + owner_id                = (known after apply)
+      + performance_mode        = (known after apply)
+      + size_in_bytes           = (known after apply)
+      + tags                    = {
+          + "Name" = "pqr-clasificador-wa-auth"
+        }
+      + tags_all                = {
+          + "Name" = "pqr-clasificador-wa-auth"
+        }
+      + throughput_mode         = "bursting"
+
+      + protection (known after apply)
+    }
+
+  # aws_efs_mount_target.wa_auth[0] will be created
+  + resource "aws_efs_mount_target" "wa_auth" {
+      + availability_zone_id   = (known after apply)
+      + availability_zone_name = (known after apply)
+      + dns_name               = (known after apply)
+      + file_system_arn        = (known after apply)
+      + file_system_id         = (known after apply)
+      + id                     = (known after apply)
+      + ip_address             = (known after apply)
+      + mount_target_dns_name  = (known after apply)
+      + network_interface_id   = (known after apply)
+      + owner_id               = (known after apply)
+      + security_groups        = (known after apply)
+      + subnet_id              = (known after apply)
+    }
+
+  # aws_efs_mount_target.wa_auth[1] will be created
+  + resource "aws_efs_mount_target" "wa_auth" {
+      + availability_zone_id   = (known after apply)
+      + availability_zone_name = (known after apply)
+      + dns_name               = (known after apply)
+      + file_system_arn        = (known after apply)
+      + file_system_id         = (known after apply)
+      + id                     = (known after apply)
+      + ip_address             = (known after apply)
+      + mount_target_dns_name  = (known after apply)
+      + network_interface_id   = (known after apply)
+      + owner_id               = (known after apply)
+      + security_groups        = (known after apply)
+      + subnet_id              = (known after apply)
+    }
+
+  # aws_eip.nat will be created
+  + resource "aws_eip" "nat" {
+      + allocation_id        = (known after apply)
+      + arn                  = (known after apply)
+      + association_id       = (known after apply)
+      + carrier_ip           = (known after apply)
+      + customer_owned_ip    = (known after apply)
+      + domain               = "vpc"
+      + id                   = (known after apply)
+      + instance             = (known after apply)
+      + ipam_pool_id         = (known after apply)
+      + network_border_group = (known after apply)
+      + network_interface    = (known after apply)
+      + private_dns          = (known after apply)
+      + private_ip           = (known after apply)
+      + ptr_record           = (known after apply)
+      + public_dns           = (known after apply)
+      + public_ip            = (known after apply)
+      + public_ipv4_pool     = (known after apply)
+      + tags                 = {
+          + "Name" = "pqr-clasificador-nat-eip"
+        }
+      + tags_all             = {
+          + "Name" = "pqr-clasificador-nat-eip"
+        }
+      + vpc                  = (known after apply)
+    }
+
+  # aws_internet_gateway.main will be created
+  + resource "aws_internet_gateway" "main" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Name" = "pqr-clasificador-igw"
+        }
+      + tags_all = {
+          + "Name" = "pqr-clasificador-igw"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # aws_lb.main will be created
+  + resource "aws_lb" "main" {
+      + arn                                                          = (known after apply)
+      + arn_suffix                                                   = (known after apply)
+      + client_keep_alive                                            = 3600
+      + desync_mitigation_mode                                       = "defensive"
+      + dns_name                                                     = (known after apply)
+      + drop_invalid_header_fields                                   = false
+      + enable_deletion_protection                                   = false
+      + enable_http2                                                 = true
+      + enable_tls_version_and_cipher_suite_headers                  = false
+      + enable_waf_fail_open                                         = false
+      + enable_xff_client_port                                       = false
+      + enable_zonal_shift                                           = false
+      + enforce_security_group_inbound_rules_on_private_link_traffic = (known after apply)
+      + id                                                           = (known after apply)
+      + idle_timeout                                                 = 60
+      + internal                                                     = false
+      + ip_address_type                                              = (known after apply)
+      + load_balancer_type                                           = "application"
+      + name                                                         = "pqr-clasificador-alb"
+      + name_prefix                                                  = (known after apply)
+      + preserve_host_header                                         = false
+      + security_groups                                              = (known after apply)
+      + subnets                                                      = (known after apply)
+      + tags                                                         = {
+          + "Name" = "pqr-clasificador-alb"
+        }
+      + tags_all                                                     = {
+          + "Name" = "pqr-clasificador-alb"
+        }
+      + vpc_id                                                       = (known after apply)
+      + xff_header_processing_mode                                   = "append"
+      + zone_id                                                      = (known after apply)
+
+      + subnet_mapping (known after apply)
+    }
+
+  # aws_lb_listener.http will be created
+  + resource "aws_lb_listener" "http" {
+      + arn                                                                   = (known after apply)
+      + id                                                                    = (known after apply)
+      + load_balancer_arn                                                     = (known after apply)
+      + port                                                                  = 80
+      + protocol                                                              = "HTTP"
+      + routing_http_request_x_amzn_mtls_clientcert_header_name               = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_issuer_header_name        = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_leaf_header_name          = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_serial_number_header_name = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_subject_header_name       = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_validity_header_name      = (known after apply)
+      + routing_http_request_x_amzn_tls_cipher_suite_header_name              = (known after apply)
+      + routing_http_request_x_amzn_tls_version_header_name                   = (known after apply)
+      + routing_http_response_access_control_allow_credentials_header_value   = (known after apply)
+      + routing_http_response_access_control_allow_headers_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_methods_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_origin_header_value        = (known after apply)
+      + routing_http_response_access_control_expose_headers_header_value      = (known after apply)
+      + routing_http_response_access_control_max_age_header_value             = (known after apply)
+      + routing_http_response_content_security_policy_header_value            = (known after apply)
+      + routing_http_response_server_enabled                                  = (known after apply)
+      + routing_http_response_strict_transport_security_header_value          = (known after apply)
+      + routing_http_response_x_content_type_options_header_value             = (known after apply)
+      + routing_http_response_x_frame_options_header_value                    = (known after apply)
+      + ssl_policy                                                            = (known after apply)
+      + tags_all                                                              = (known after apply)
+      + tcp_idle_timeout_seconds                                              = (known after apply)
+
+      + default_action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + mutual_authentication (known after apply)
+    }
+
+  # aws_lb_target_group.backend will be created
+  + resource "aws_lb_target_group" "backend" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "pqr-clasificador-backend-tg"
+      + name_prefix                        = (known after apply)
+      + port                               = 3001
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags                               = {
+          + "Name" = "pqr-clasificador-backend-tg"
+        }
+      + tags_all                           = {
+          + "Name" = "pqr-clasificador-backend-tg"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 2
+          + interval            = 30
+          + matcher             = "200"
+          + path                = "/"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 5
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # aws_nat_gateway.main will be created
+  + resource "aws_nat_gateway" "main" {
+      + allocation_id                      = (known after apply)
+      + association_id                     = (known after apply)
+      + connectivity_type                  = "public"
+      + id                                 = (known after apply)
+      + network_interface_id               = (known after apply)
+      + private_ip                         = (known after apply)
+      + public_ip                          = (known after apply)
+      + secondary_private_ip_address_count = (known after apply)
+      + secondary_private_ip_addresses     = (known after apply)
+      + subnet_id                          = (known after apply)
+      + tags                               = {
+          + "Name" = "pqr-clasificador-nat"
+        }
+      + tags_all                           = {
+          + "Name" = "pqr-clasificador-nat"
+        }
+    }
+
+  # aws_route_table.private will be created
+  + resource "aws_route_table" "private" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + cidr_block                 = "0.0.0.0/0"
+              + nat_gateway_id             = (known after apply)
+                # (11 unchanged attributes hidden)
+            },
+        ]
+      + tags             = {
+          + "Name" = "pqr-clasificador-private-rt"
+        }
+      + tags_all         = {
+          + "Name" = "pqr-clasificador-private-rt"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # aws_route_table.public will be created
+  + resource "aws_route_table" "public" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + cidr_block                 = "0.0.0.0/0"
+              + gateway_id                 = (known after apply)
+                # (11 unchanged attributes hidden)
+            },
+        ]
+      + tags             = {
+          + "Name" = "pqr-clasificador-public-rt"
+        }
+      + tags_all         = {
+          + "Name" = "pqr-clasificador-public-rt"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # aws_route_table_association.private[0] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_route_table_association.private[1] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_route_table_association.public[0] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_route_table_association.public[1] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # aws_s3_bucket.frontend will be created
+  + resource "aws_s3_bucket" "frontend" {
+      + acceleration_status         = (known after apply)
+      + acl                         = (known after apply)
+      + arn                         = (known after apply)
+      + bucket                      = "pqr-clasificador-frontend-447958713966"
+      + bucket_domain_name          = (known after apply)
+      + bucket_prefix               = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + object_lock_enabled         = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + tags                        = {
+          + "Name" = "pqr-clasificador-frontend"
+        }
+      + tags_all                    = {
+          + "Name" = "pqr-clasificador-frontend"
+        }
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + cors_rule (known after apply)
+
+      + grant (known after apply)
+
+      + lifecycle_rule (known after apply)
+
+      + logging (known after apply)
+
+      + object_lock_configuration (known after apply)
+
+      + replication_configuration (known after apply)
+
+      + server_side_encryption_configuration (known after apply)
+
+      + versioning (known after apply)
+
+      + website (known after apply)
+    }
+
+  # aws_s3_bucket_policy.frontend will be created
+  + resource "aws_s3_bucket_policy" "frontend" {
+      + bucket = (known after apply)
+      + id     = (known after apply)
+      + policy = (known after apply)
+    }
+
+  # aws_s3_bucket_public_access_block.frontend will be created
+  + resource "aws_s3_bucket_public_access_block" "frontend" {
+      + block_public_acls       = true
+      + block_public_policy     = true
+      + bucket                  = (known after apply)
+      + id                      = (known after apply)
+      + ignore_public_acls      = true
+      + restrict_public_buckets = true
+    }
+
+  # aws_security_group.alb will be created
+  + resource "aws_security_group" "alb" {
+      + arn                    = (known after apply)
+      + description            = "Trafico HTTP entrante hacia el ALB"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = "HTTP desde internet"
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+        ]
+      + name                   = "pqr-clasificador-alb-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "pqr-clasificador-alb-sg"
+        }
+      + tags_all               = {
+          + "Name" = "pqr-clasificador-alb-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.ecs will be created
+  + resource "aws_security_group" "ecs" {
+      + arn                    = (known after apply)
+      + description            = "Trafico hacia las tareas de ECS Fargate (backend)"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = "Trafico desde el ALB"
+              + from_port        = 3001
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 3001
+            },
+        ]
+      + name                   = "pqr-clasificador-ecs-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "pqr-clasificador-ecs-sg"
+        }
+      + tags_all               = {
+          + "Name" = "pqr-clasificador-ecs-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.efs will be created
+  + resource "aws_security_group" "efs" {
+      + arn                    = (known after apply)
+      + description            = "Acceso NFS desde las tareas de ECS (sesion de WhatsApp persistente)"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = "NFS desde ECS"
+              + from_port        = 2049
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 2049
+            },
+        ]
+      + name                   = "pqr-clasificador-efs-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "pqr-clasificador-efs-sg"
+        }
+      + tags_all               = {
+          + "Name" = "pqr-clasificador-efs-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.rds will be created
+  + resource "aws_security_group" "rds" {
+      + arn                    = (known after apply)
+      + description            = "Acceso a PostgreSQL solo desde las tareas de ECS"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = "PostgreSQL desde ECS"
+              + from_port        = 5432
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 5432
+            },
+        ]
+      + name                   = "pqr-clasificador-rds-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "pqr-clasificador-rds-sg"
+        }
+      + tags_all               = {
+          + "Name" = "pqr-clasificador-rds-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_ssm_parameter.admin_email will be created
+  + resource "aws_ssm_parameter" "admin_email" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/ADMIN_EMAIL"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.admin_password will be created
+  + resource "aws_ssm_parameter" "admin_password" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/ADMIN_PASSWORD"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.database_url will be created
+  + resource "aws_ssm_parameter" "database_url" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/DATABASE_URL"
+      + tags           = {
+          + "Name" = "pqr-clasificador-database-url"
+        }
+      + tags_all       = {
+          + "Name" = "pqr-clasificador-database-url"
+        }
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.email_pass will be created
+  + resource "aws_ssm_parameter" "email_pass" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/EMAIL_PASS"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.email_user will be created
+  + resource "aws_ssm_parameter" "email_user" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/EMAIL_USER"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.jwt_secret will be created
+  + resource "aws_ssm_parameter" "jwt_secret" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/JWT_SECRET"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.openrouter_api_key will be created
+  + resource "aws_ssm_parameter" "openrouter_api_key" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/OPENROUTER_API_KEY"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_ssm_parameter.telegram_bot_token will be created
+  + resource "aws_ssm_parameter" "telegram_bot_token" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN"
+      + tags_all       = (known after apply)
+      + tier           = (known after apply)
+      + type           = "SecureString"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # aws_subnet.private[0] will be created
+  + resource "aws_subnet" "private" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.10.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "pqr-clasificador-private-us-east-1a"
+        }
+      + tags_all                                       = {
+          + "Name" = "pqr-clasificador-private-us-east-1a"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.private[1] will be created
+  + resource "aws_subnet" "private" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.11.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "pqr-clasificador-private-us-east-1b"
+        }
+      + tags_all                                       = {
+          + "Name" = "pqr-clasificador-private-us-east-1b"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.public[0] will be created
+  + resource "aws_subnet" "public" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.0.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "pqr-clasificador-public-us-east-1a"
+        }
+      + tags_all                                       = {
+          + "Name" = "pqr-clasificador-public-us-east-1a"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_subnet.public[1] will be created
+  + resource "aws_subnet" "public" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "pqr-clasificador-public-us-east-1b"
+        }
+      + tags_all                                       = {
+          + "Name" = "pqr-clasificador-public-us-east-1b"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_vpc.main will be created
+  + resource "aws_vpc" "main" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Name" = "pqr-clasificador-vpc"
+        }
+      + tags_all                             = {
+          + "Name" = "pqr-clasificador-vpc"
+        }
+    }
+
+Plan: 46 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + alb_dns_name           = (known after apply)
+  + cloudfront_domain_name = (known after apply)
+  + ecr_repository_url     = (known after apply)
+  + ecs_cluster_name       = "pqr-clasificador-cluster"
+  + ecs_service_name       = "pqr-clasificador-backend"
+  + frontend_bucket_name   = "pqr-clasificador-frontend-447958713966"
+  + rds_endpoint           = (known after apply)
+aws_cloudfront_origin_access_control.frontend: Creating...
+aws_cloudwatch_log_group.backend: Creating...
+aws_ecr_repository.backend: Creating...
+aws_ssm_parameter.admin_email: Creating...
+aws_ssm_parameter.email_pass: Creating...
+aws_ssm_parameter.openrouter_api_key: Creating...
+aws_eip.nat: Creating...
+aws_vpc.main: Creating...
+aws_ecs_cluster.main: Creating...
+aws_s3_bucket.frontend: Creating...
+aws_ssm_parameter.telegram_bot_token: Creating...
+aws_cloudwatch_log_group.backend: Creation complete after 1s [id=/ecs/pqr-clasificador-backend]
+aws_ssm_parameter.jwt_secret: Creating...
+aws_ecr_repository.backend: Creation complete after 1s [id=pqr-clasificador-backend]
+aws_ssm_parameter.email_user: Creating...
+aws_ssm_parameter.openrouter_api_key: Creation complete after 1s [id=/pqr-clasificador/prod/OPENROUTER_API_KEY]
+aws_ssm_parameter.admin_password: Creating...
+aws_ssm_parameter.email_pass: Creation complete after 1s [id=/pqr-clasificador/prod/EMAIL_PASS]
+aws_efs_file_system.wa_auth: Creating...
+aws_ssm_parameter.admin_email: Creation complete after 1s [id=/pqr-clasificador/prod/ADMIN_EMAIL]
+aws_ecr_lifecycle_policy.backend: Creating...
+aws_ssm_parameter.telegram_bot_token: Creation complete after 0s [id=/pqr-clasificador/prod/TELEGRAM_BOT_TOKEN]
+aws_ecr_lifecycle_policy.backend: Creation complete after 0s [id=pqr-clasificador-backend]
+aws_ssm_parameter.jwt_secret: Creation complete after 1s [id=/pqr-clasificador/prod/JWT_SECRET]
+aws_ssm_parameter.email_user: Creation complete after 1s [id=/pqr-clasificador/prod/EMAIL_USER]
+aws_ssm_parameter.admin_password: Creation complete after 1s [id=/pqr-clasificador/prod/ADMIN_PASSWORD]
+aws_s3_bucket.frontend: Creation complete after 3s [id=pqr-clasificador-frontend-447958713966]
+aws_s3_bucket_public_access_block.frontend: Creating...
+aws_s3_bucket_public_access_block.frontend: Creation complete after 0s [id=pqr-clasificador-frontend-447958713966]
+aws_eip.nat: Creation complete after 3s [id=eipalloc-0174d6be5e77595fa]
+aws_efs_file_system.wa_auth: Creation complete after 8s [id=fs-022bb78c9e23f1140]
+aws_efs_access_point.wa_auth: Creating...
+aws_vpc.main: Still creating... [00m10s elapsed]
+aws_efs_access_point.wa_auth: Creation complete after 2s [id=fsap-0a3074de6609b704b]
+aws_vpc.main: Creation complete after 13s [id=vpc-0a06fc992c2174190]
+aws_internet_gateway.main: Creating...
+aws_subnet.public[1]: Creating...
+aws_subnet.private[0]: Creating...
+aws_subnet.private[1]: Creating...
+aws_subnet.public[0]: Creating...
+aws_security_group.alb: Creating...
+aws_lb_target_group.backend: Creating...
+aws_subnet.private[0]: Creation complete after 1s [id=subnet-02629a5b32fc249a3]
+aws_internet_gateway.main: Creation complete after 1s [id=igw-00479cb181a9f07dd]
+aws_route_table.public: Creating...
+aws_subnet.private[1]: Creation complete after 1s [id=subnet-0db77a11676169253]
+aws_db_subnet_group.main: Creating...
+aws_lb_target_group.backend: Creation complete after 2s [id=arn:aws:elasticloadbalancing:us-east-1:447958713966:targetgroup/pqr-clasificador-backend-tg/d2cf1094636b97d1]
+aws_route_table.public: Creation complete after 2s [id=rtb-0e98002a2c69a95df]
+aws_security_group.alb: Creation complete after 4s [id=sg-0bbaf358ac00eda65]
+aws_security_group.ecs: Creating...
+aws_security_group.ecs: Creation complete after 4s [id=sg-030e5eb3dded601db]
+aws_security_group.rds: Creating...
+aws_security_group.efs: Creating...
+aws_subnet.public[0]: Still creating... [00m10s elapsed]
+aws_subnet.public[1]: Still creating... [00m10s elapsed]
+aws_security_group.rds: Creation complete after 3s [id=sg-0f0cf9c250f8f644b]
+aws_security_group.efs: Creation complete after 3s [id=sg-0c2bdaa0a4cf7b2cb]
+aws_efs_mount_target.wa_auth[1]: Creating...
+aws_efs_mount_target.wa_auth[0]: Creating...
+aws_subnet.public[1]: Creation complete after 12s [id=subnet-0ce201fb33698efa3]
+aws_subnet.public[0]: Creation complete after 13s [id=subnet-0f541513780b67bcd]
+aws_route_table_association.public[0]: Creating...
+aws_route_table_association.public[1]: Creating...
+aws_nat_gateway.main: Creating...
+aws_lb.main: Creating...
+aws_route_table_association.public[0]: Creation complete after 0s [id=rtbassoc-02f3df9db800f4fd0]
+aws_route_table_association.public[1]: Creation complete after 0s [id=rtbassoc-0a4e6e90e2ad50b38]
+aws_efs_mount_target.wa_auth[0]: Still creating... [00m10s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [00m10s elapsed]
+aws_nat_gateway.main: Still creating... [00m10s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [00m20s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [00m20s elapsed]
+aws_nat_gateway.main: Still creating... [00m20s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [00m30s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [00m30s elapsed]
+aws_nat_gateway.main: Still creating... [00m30s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [00m40s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [00m40s elapsed]
+aws_nat_gateway.main: Still creating... [00m40s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [00m50s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [00m50s elapsed]
+aws_nat_gateway.main: Still creating... [00m50s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [01m00s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [01m00s elapsed]
+aws_nat_gateway.main: Still creating... [01m00s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [01m10s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [01m10s elapsed]
+aws_nat_gateway.main: Still creating... [01m10s elapsed]
+aws_efs_mount_target.wa_auth[0]: Still creating... [01m20s elapsed]
+aws_efs_mount_target.wa_auth[1]: Still creating... [01m20s elapsed]
+aws_nat_gateway.main: Still creating... [01m20s elapsed]
+aws_efs_mount_target.wa_auth[0]: Creation complete after 1m24s [id=fsmt-0c65a7eff5a88a900]
+aws_efs_mount_target.wa_auth[1]: Creation complete after 1m24s [id=fsmt-0ec9f8e00b609ab12]
+aws_nat_gateway.main: Still creating... [01m30s elapsed]
+aws_nat_gateway.main: Still creating... [01m40s elapsed]
+aws_nat_gateway.main: Still creating... [01m50s elapsed]
+aws_nat_gateway.main: Creation complete after 1m55s [id=nat-07ceabcfc9bc10992]
+aws_route_table.private: Creating...
+aws_route_table.private: Creation complete after 2s [id=rtb-01b4504453e480c55]
+aws_route_table_association.private[0]: Creating...
+aws_route_table_association.private[1]: Creating...
+aws_route_table_association.private[0]: Creation complete after 1s [id=rtbassoc-03adf0039a1d55c7f]
+aws_route_table_association.private[1]: Creation complete after 1s [id=rtbassoc-00c6faed26e7152bd]
+
+Error: ELBv2 Load Balancer (pqr-clasificador-alb) already exists
+
+  with aws_lb.main,
+  on alb.tf line 1, in resource "aws_lb" "main":
+   1: resource "aws_lb" "main" {
+
+
+Error: creating CloudFront Origin Access Control (pqr-clasificador-frontend-oac): operation error CloudFront: CreateOriginAccessControl, https response error StatusCode: 403, RequestID: d791cc18-cb43-4bff-bbb3-4191adf4595f, api error AccessDenied: User: arn:aws:sts::447958713966:assumed-role/voclabs/user5140083=wjosemartinez@unicesar.edu.co is not authorized to perform: cloudfront:CreateOriginAccessControl on resource: arn:aws:cloudfront::447958713966:origin-access-control/* because no identity-based policy allows the cloudfront:CreateOriginAccessControl action
+
+  with aws_cloudfront_origin_access_control.frontend,
+  on cloudfront.tf line 21, in resource "aws_cloudfront_origin_access_control" "frontend":
+  21: resource "aws_cloudfront_origin_access_control" "frontend" {
+
+
+Error: creating ECS Cluster (pqr-clasificador-cluster): operation error ECS: CreateCluster, https response error StatusCode: 400, RequestID: 3388d0ef-beba-424a-9489-ec7389c7a990, InvalidParameterException: Arguments on this idempotent request are inconsistent with arguments used in previous request(s).
+
+  with aws_ecs_cluster.main,
+  on ecs.tf line 1, in resource "aws_ecs_cluster" "main":
+   1: resource "aws_ecs_cluster" "main" {
+
+
+Error: creating RDS DB Subnet Group (pqr-clasificador-db-subnet-group): operation error RDS: CreateDBSubnetGroup, https response error StatusCode: 400, RequestID: b80efe61-bbcb-48ea-bb05-8b3293e448f1, DBSubnetGroupAlreadyExists: The DB subnet group 'pqr-clasificador-db-subnet-group' already exists.
+
+  with aws_db_subnet_group.main,
+  on rds.tf line 1, in resource "aws_db_subnet_group" "main":
+   1: resource "aws_db_subnet_group" "main" {
+

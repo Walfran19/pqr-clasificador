@@ -1,17 +1,6 @@
 require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+const app = require("./src/app");
 const { inicializar } = require("./src/models/database");
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Rutas
-app.use("/api/pqr",  require("./src/routes/pqr.routes"));
-app.use("/api/auth", require("./src/routes/auth.routes"));
-
-app.get("/", (req, res) => res.json({ mensaje: "API PQR activa ✓" }));
 
 async function main() {
   // Inicializar base de datos
